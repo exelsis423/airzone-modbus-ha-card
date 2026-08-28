@@ -56,7 +56,7 @@ class AirzoneThermostatCard extends HTMLElement {
       </style>
 
       <div class="thermostat">
-        <img src="https://raw.githubusercontent.com/exelsis423/airzone-modbus-ha-card/main/airzone-thermostat-lite.jpg">
+        <img src="https://raw.githubusercontent.com/exelsis423/airzone-modbus-ha-card/main/images/airzone-thermostat-lite.jpg">
       </div>
     `;
   }
@@ -70,3 +70,12 @@ customElements.define(
   "airzone-thermostat-card",
   AirzoneThermostatCard
 );
+
+window.customCards = window.customCards || [];
+
+window.customCards.push({
+  type: "airzone-thermostat-card",
+  name: "Airzone Thermostat",
+  description: "Carte thermostat Airzone Modbus",
+  preview: true,
+});

@@ -72,55 +72,66 @@ class AirzoneThermostatCard extends LitElement {
 
     /*
      * Indicateur d'offset
+     *
+     * Toutes les dimensions sont proportionnelles
+     * à la largeur de la carte.
      */
 
     .offset-line {
       position: absolute;
+
       top: 16%;
       left: 50%;
+
       transform: translateX(-50%);
 
-      width: 60px;
-      height: 40px;
+      width: 20cqw;
+      height: 13.33cqw;
     }
 
     .offset-bars {
       position: relative;
 
-      width: 60px;
-      height: 40px;
+      width: 100%;
+      height: 100%;
     }
 
     .offset-bar {
       position: absolute;
 
-      width: 3px;
+      width: 1cqw;
 
       background: currentColor;
 
-      border-radius: 2px;
+      border-radius: 0.5cqw;
     }
 
     /*
      * Barres vers le bas
+     *
+     * Les trois barres partent du même axe
+     * mais sont décalées horizontalement.
      */
 
     .offset-bar.down.small {
-      left: 36px;
-      top: 20px;
-      height: 7px;
+      left: 60%;
+      top: 50%;
+
+      height: 2.33cqw;
     }
 
     .offset-bar.down.medium {
-      left: 31px;
-      top: 20px;
-      height: 11px;
+      left: 51.67%;
+      top: 50%;
+
+      height: 3.67cqw;
     }
 
     .offset-bar.down.large {
-      left: 26px;
-      top: 20px;
-      height: 15px;
+      left: 43.33%;
+      top: 50%;
+
+      height: 5cqw;
     }
 
     /*
@@ -128,21 +139,24 @@ class AirzoneThermostatCard extends LitElement {
      */
 
     .offset-bar.up.small {
-      left: 36px;
-      bottom: 20px;
-      height: 7px;
+      left: 60%;
+      bottom: 50%;
+
+      height: 2.33cqw;
     }
 
     .offset-bar.up.medium {
-      left: 31px;
-      bottom: 20px;
-      height: 11px;
+      left: 51.67%;
+      bottom: 50%;
+
+      height: 3.67cqw;
     }
 
     .offset-bar.up.large {
-      left: 26px;
-      bottom: 20px;
-      height: 15px;
+      left: 43.33%;
+      bottom: 50%;
+
+      height: 5cqw;
     }
 
     /*
@@ -155,11 +169,12 @@ class AirzoneThermostatCard extends LitElement {
       position: absolute;
 
       top: 0;
-      width: 28px;
-      height: 40px;
 
-      border: 1px dashed currentColor;
-      border-radius: 6px;
+      width: 9.33cqw;
+      height: 100%;
+
+      border: 0.33cqw dashed currentColor;
+      border-radius: 2cqw;
 
       background: rgba(128, 128, 128, 0.15);
 
@@ -169,11 +184,11 @@ class AirzoneThermostatCard extends LitElement {
     }
 
     .offset-click-zone.left {
-      left: -30px;
+      left: -10cqw;
     }
 
     .offset-click-zone.right {
-      right: -30px;
+      right: -10cqw;
     }
 
     /*
@@ -182,6 +197,7 @@ class AirzoneThermostatCard extends LitElement {
 
     .led-status {
       position: absolute;
+
       right: 8%;
       bottom: 8%;
 
@@ -197,6 +213,7 @@ class AirzoneThermostatCard extends LitElement {
       height: 1em;
 
       border-radius: 50%;
+
       background: currentColor;
 
       box-shadow:
@@ -563,4 +580,3 @@ window.customCards.push({
   description: "Thermostat Lite Airzone",
   preview: true,
 });
-

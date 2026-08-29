@@ -55,79 +55,96 @@ class AirzoneThermostatCard extends LitElement {
     /*
      * Indicateur d'offset
      */
-    
+
     .offset-line {
       position: absolute;
       top: 16%;
       left: 50%;
       transform: translateX(-50%);
-    
+
       width: 60px;
       height: 40px;
     }
-    
+
     .offset-bars {
       position: relative;
-    
+
       width: 60px;
       height: 40px;
     }
-    
+
     .offset-bar {
       position: absolute;
-    
+
       width: 3px;
-    
+
       background: currentColor;
-    
+
       border-radius: 2px;
     }
-    
+
     /*
      * Barres vers le bas
-     *
-     * Les trois barres partent du même axe
-     * mais sont décalées horizontalement.
      */
-    
+
     .offset-bar.down.small {
       left: 36px;
       top: 20px;
       height: 7px;
     }
-    
+
     .offset-bar.down.medium {
       left: 31px;
       top: 20px;
       height: 11px;
     }
-    
+
     .offset-bar.down.large {
       left: 26px;
       top: 20px;
       height: 15px;
     }
-    
+
     /*
      * Barres vers le haut
      */
-    
+
     .offset-bar.up.small {
       left: 36px;
       bottom: 20px;
       height: 7px;
     }
-    
+
     .offset-bar.up.medium {
       left: 31px;
       bottom: 20px;
       height: 11px;
     }
-    
+
     .offset-bar.up.large {
       left: 26px;
       bottom: 20px;
       height: 15px;
+    }
+
+    /*
+     * État de la LED du thermostat
+     */
+
+    .led-status {
+      position: absolute;
+      bottom: 5%;
+      right: 8%;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      font-size: 20px;
+    }
+
+    .led-status ha-icon {
+      --mdc-icon-size: 20px;
     }
   `;
 
@@ -170,6 +187,11 @@ class AirzoneThermostatCard extends LitElement {
         `number.airzone_zone_${zone}_offset_thermostat`
       ];
 
+    const ledEntity =
+      this.hass.states[
+        `switch.airzone_zone_${zone}_led_thermostat`
+      ];
+
     if (!nameEntity) {
       return html`
         <ha-card>
@@ -199,6 +221,9 @@ class AirzoneThermostatCard extends LitElement {
       offsetEntity?.state !== undefined
         ? Number(offsetEntity.state)
         : 0;
+
+    const ledOn =
+      ledEntity?.state === "on";
 
     return html`
       <ha-card>
@@ -260,6 +285,18 @@ class AirzoneThermostatCard extends LitElement {
             </div>
 
           </div>
+
+          ${ledEntity
+            ? html`
+                <div class="led-status">
+                  <ha-icon
+                    icon="${ledOn
+                      ? "mdi:led-on"
+                      : "mdi:led-off"}"
+                  ></ha-icon>
+                </div>
+              `
+            : ""}
 
         </div>
       </ha-card>

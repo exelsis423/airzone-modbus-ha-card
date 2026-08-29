@@ -16,15 +16,13 @@ class AirzoneThermostatCard extends LitElement {
 
     .thermostat {
       position: relative;
-      width: 90%;
-      height: 90%;
+      width: 100%;
       container-type: inline-size;
     }
 
     .thermostat img {
       display: block;
       width: 100%;
-      height: auto;
     }
 
     /*

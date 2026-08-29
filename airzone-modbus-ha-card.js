@@ -443,7 +443,7 @@ class AirzoneThermostatCard extends LitElement {
           <!-- Image du thermostat -->
 
           <img
-            src="https://raw.githubusercontent.com/exelsis423/airzone-modbus-ha-card/main/images/airzone-lite.jpg"
+            src="https://raw.githubusercontent.com/exelsis423/airzone-modbus-ha-card/main/images/airzone-lite.png"
           >
 
           <!-- Nom -->

@@ -1,3 +1,5 @@
+import { LitElement, html, css } from "https://unpkg.com/lit?module";
+
 class AirzoneThermostatCard extends HTMLElement {
 
   setConfig(config) {
@@ -66,16 +68,6 @@ class AirzoneThermostatCard extends HTMLElement {
   }
 }
 
-customElements.define(
-  "airzone-thermostat-card",
-  AirzoneThermostatCard
-);
 
-window.customCards = window.customCards || [];
 
-window.customCards.push({
-  type: "airzone-thermostat-card",
-  name: "Airzone Thermostat",
-  description: "Carte thermostat Airzone Modbus",
-  preview: true,
-});
+customElements.define('airzone-modbus-card', AirzoneModbusCard);

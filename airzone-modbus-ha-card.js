@@ -16,7 +16,8 @@ class AirzoneThermostatCard extends LitElement {
 
     .thermostat {
       position: relative;
-      width: 100%;
+      width: 90%;
+      height: 90%;
       container-type: inline-size;
     }
 
@@ -442,7 +443,7 @@ class AirzoneThermostatCard extends LitElement {
           <!-- Image du thermostat -->
 
           <img
-            src="https://raw.githubusercontent.com/exelsis423/airzone-modbus-ha-card/main/images/airzone-thermostat-lite-OK.jpg"
+            src="https://raw.githubusercontent.com/exelsis423/airzone-modbus-ha-card/main/images/airzone-lite.jpg"
           >
 
           <!-- Nom -->

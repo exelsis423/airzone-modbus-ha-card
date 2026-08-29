@@ -173,7 +173,7 @@ class AirzoneThermostatCard extends LitElement {
       width: 18cqw;
       height: 100%;
 
-      border: 0.33cqw dashed rgba(0, 0, 0, 0.01);
+      border: 0.33cqw dashed rgba(0, 0, 0, 0.23);
       border-radius: 2cqw;
 
       background: rgba(128, 128, 128, 0.1);

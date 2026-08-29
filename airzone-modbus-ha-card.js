@@ -114,21 +114,21 @@ class AirzoneThermostatCard extends LitElement {
      */
 
     .offset-bar.down.small {
-      left: 50%;
+      left: 9%;
       top: 50%;
 
       height: 2.33cqw;
     }
 
     .offset-bar.down.medium {
-      left: 41.67%;
+      left: -5%;
       top: 50%;
 
       height: 3.67cqw;
     }
 
     .offset-bar.down.large {
-      left: 33.33%;
+      left: -20%;
       top: 50%;
 
       height: 5cqw;
@@ -139,21 +139,21 @@ class AirzoneThermostatCard extends LitElement {
      */
 
     .offset-bar.up.small {
-      right: 50%;
+      right: 9%;
       bottom: 50%;
 
       height: 2.33cqw;
     }
 
     .offset-bar.up.medium {
-      right: 41.67%;
+      right: -5%;
       bottom: 50%;
 
       height: 3.67cqw;
     }
 
     .offset-bar.up.large {
-      right: 33.33%;
+      right: -20%;
       bottom: 50%;
 
       height: 5cqw;

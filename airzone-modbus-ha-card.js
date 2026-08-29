@@ -51,6 +51,45 @@ class AirzoneThermostatCard extends LitElement {
       font-size: 16px;
       font-weight: 500;
     }
+
+    .offset-line {
+      position: absolute;
+      top: 16%;
+      left: 50%;
+      transform: translateX(-50%);
+
+      display: flex;
+      align-items: center;
+      gap: 4px;
+
+      height: 20px;
+    }
+
+    .offset-marker {
+      display: block;
+      width: 3px;
+      background: currentColor;
+      border-radius: 2px;
+    }
+
+    .offset-marker.small {
+      height: 7px;
+    }
+
+    .offset-marker.medium {
+      height: 11px;
+    }
+
+    .offset-marker.large {
+      height: 15px;
+    }
+
+    .offset-center {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: currentColor;
+    }
   `;
 
   setConfig(config) {
@@ -76,10 +115,19 @@ class AirzoneThermostatCard extends LitElement {
       this.hass.states[`sensor.airzone_zone_${zone}_nom`];
 
     const temperatureEntity =
-      this.hass.states[`sensor.airzone_zone_${zone}_temperature_sonde`];
+      this.hass.states[
+        `sensor.airzone_zone_${zone}_temperature_sonde`
+      ];
 
     const humidityEntity =
-      this.hass.states[`sensor.airzone_zone_${zone}_humidite`];
+      this.hass.states[
+        `sensor.airzone_zone_${zone}_humidite`
+      ];
+
+    const offsetEntity =
+      this.hass.states[
+        `number.airzone_zone_${zone}_offset_thermostat`
+      ];
 
     if (!nameEntity) {
       return html`
@@ -106,6 +154,11 @@ class AirzoneThermostatCard extends LitElement {
         ? `${humidityEntity.state} %`
         : "";
 
+    const offset =
+      offsetEntity?.state !== undefined
+        ? Number(offsetEntity.state)
+        : 0;
+
     return html`
       <ha-card>
         <div class="thermostat">
@@ -121,6 +174,52 @@ class AirzoneThermostatCard extends LitElement {
           <div class="info-line">
             <span>${temperature}</span>
             <span>${humidity}</span>
+          </div>
+
+          <div class="offset-line">
+
+            ${offset <= -3
+              ? html`
+                  <span class="offset-marker large"></span>
+                `
+              : ""}
+
+            ${offset <= -2
+              ? html`
+                  <span class="offset-marker medium"></span>
+                `
+              : ""}
+
+            ${offset <= -1
+              ? html`
+                  <span class="offset-marker small"></span>
+                `
+              : ""}
+
+            ${offset === 0
+              ? html`
+                  <span class="offset-center"></span>
+                `
+              : ""}
+
+            ${offset >= 1
+              ? html`
+                  <span class="offset-marker small"></span>
+                `
+              : ""}
+
+            ${offset >= 2
+              ? html`
+                  <span class="offset-marker medium"></span>
+                `
+              : ""}
+
+            ${offset >= 3
+              ? html`
+                  <span class="offset-marker large"></span>
+                `
+              : ""}
+
           </div>
 
         </div>

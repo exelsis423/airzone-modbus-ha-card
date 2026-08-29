@@ -24,6 +24,19 @@ class AirzoneThermostatCard extends LitElement {
       width: 100%;
       height: auto;
     }
+
+    .zone-name {
+      position: absolute;
+      top: 4%;
+      left: 50%;
+      transform: translateX(-50%);
+
+      font-size: 18px;
+      font-weight: 500;
+      text-align: center;
+
+      white-space: nowrap;
+    }
   `;
 
   setConfig(config) {
@@ -58,9 +71,15 @@ class AirzoneThermostatCard extends LitElement {
     return html`
       <ha-card>
         <div class="thermostat">
+
           <img
             src="https://raw.githubusercontent.com/exelsis423/airzone-modbus-ha-card/main/images/airzone-thermostat-lite.jpg"
           >
+
+          <div class="zone-name">
+            ${this.config.name || entity.attributes.friendly_name || "Zone"}
+          </div>
+
         </div>
       </ha-card>
     `;

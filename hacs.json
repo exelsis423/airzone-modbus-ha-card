@@ -3,4 +3,5 @@
   "content_in_root": true,
   "filename": "dist/airzone-modbus-ha-card.js",
   "render_readme": true
+  "homeassistant": "2026.1.0"
 }

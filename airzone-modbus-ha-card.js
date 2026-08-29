@@ -80,7 +80,7 @@ class AirzoneThermostatCard extends LitElement {
     .offset-line {
       position: absolute;
 
-      top: 16%;
+      top: 50%;
       left: 50%;
 
       transform: translateX(-50%);

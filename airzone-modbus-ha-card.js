@@ -54,84 +54,78 @@ class AirzoneThermostatCard extends LitElement {
 
     /*
      * Indicateur d'offset
-     *
-     * Les 6 barres ont toutes le même point
-     * de départ horizontal.
      */
-
+    
     .offset-line {
       position: absolute;
       top: 16%;
       left: 50%;
       transform: translateX(-50%);
-
-      display: flex;
-      align-items: center;
-      justify-content: center;
-
+    
       width: 60px;
       height: 40px;
     }
-
+    
     .offset-bars {
       position: relative;
-
+    
       width: 60px;
       height: 40px;
     }
-
+    
     .offset-bar {
       position: absolute;
-
-      left: 50%;
-
+    
       width: 3px;
-
+    
       background: currentColor;
-
+    
       border-radius: 2px;
-
-      transform: translateX(-50%);
     }
-
+    
     /*
      * Barres vers le bas
      *
-     * Le point de départ est identique.
+     * Les trois barres partent du même axe
+     * mais sont décalées horizontalement.
      */
-
+    
     .offset-bar.down.small {
+      left: 36px;
       top: 20px;
       height: 7px;
     }
-
+    
     .offset-bar.down.medium {
+      left: 31px;
       top: 20px;
       height: 11px;
     }
-
+    
     .offset-bar.down.large {
+      left: 26px;
       top: 20px;
       height: 15px;
     }
-
+    
     /*
      * Barres vers le haut
-     *
-     * Le point de départ est identique.
      */
-
+    
     .offset-bar.up.small {
+      left: 36px;
       bottom: 20px;
       height: 7px;
     }
-
+    
     .offset-bar.up.medium {
+      left: 31px;
       bottom: 20px;
       height: 11px;
     }
-
+    
     .offset-bar.up.large {
+      left: 26px;
       bottom: 20px;
       height: 15px;
     }

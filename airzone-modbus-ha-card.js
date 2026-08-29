@@ -197,21 +197,25 @@ class AirzoneThermostatCard extends LitElement {
 
     .offset-center {
       position: absolute;
-
+    
       left: 50%;
       top: 50%;
-
+    
       transform: translate(-50%, -50%);
-
+    
       width: 4cqw;
       height: 4cqw;
-
+    
       border-radius: 50%;
-
-      background: rgba(128, 128, 128, 0.5);
-
+    
+      border: 0.8cqw solid rgba(128, 128, 128, 0.5);
+    
+      background: transparent;
+    
+      box-sizing: border-box;
+    
       z-index: 3;
-
+    
       pointer-events: none;
     }
 

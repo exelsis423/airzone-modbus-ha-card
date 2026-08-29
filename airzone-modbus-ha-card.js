@@ -38,11 +38,11 @@ class AirzoneThermostatCard extends LitElement {
       white-space: nowrap;
     }
 
-    .zone-info {
+    .info-line {
       position: absolute;
-      top: 12%;
-      left: 5%;
-      right: 5%;
+      top: 10%;
+      left: 8%;
+      right: 8%;
 
       display: flex;
       justify-content: space-between;
@@ -51,19 +51,11 @@ class AirzoneThermostatCard extends LitElement {
       font-size: 16px;
       font-weight: 500;
     }
-
-    .temperature {
-      text-align: left;
-    }
-
-    .humidity {
-      text-align: right;
-    }
   `;
 
   setConfig(config) {
-    if (!config.entity) {
-      throw new Error("L'entité est obligatoire");
+    if (config.zone === undefined) {
+      throw new Error("Le numéro de zone est obligatoire");
     }
 
     this.config = config;
@@ -78,67 +70,41 @@ class AirzoneThermostatCard extends LitElement {
       return html``;
     }
 
-    /*
-     * L'entité configurée sert uniquement à déterminer la zone.
-     *
-     * Exemple :
-     * switch.airzone_zone_1_etat
-     *
-     * => zone = 1
-     */
-    const match = this.config.entity.match(
-      /airzone_zone_(\d+)_/
-    );
+    const zone = this.config.zone;
 
-    if (!match) {
-      return html`
-        <ha-card>
-          <div style="padding: 16px;">
-            Entité Airzone invalide
-          </div>
-        </ha-card>
-      `;
-    }
-
-    const zone = match[1];
-
-    const stateEntity =
-      this.hass.states[
-        `switch.airzone_zone_${zone}_etat`
-      ];
+    const nameEntity =
+      this.hass.states[`sensor.airzone_zone_${zone}_nom`];
 
     const temperatureEntity =
-      this.hass.states[
-        `sensor.airzone_zone_${zone}_temperature_sonde`
-      ];
+      this.hass.states[`sensor.airzone_zone_${zone}_temperature_sonde`];
 
     const humidityEntity =
-      this.hass.states[
-        `sensor.airzone_zone_${zone}_humidite`
-      ];
+      this.hass.states[`sensor.airzone_zone_${zone}_humidite`];
 
-    if (!stateEntity) {
+    if (!nameEntity) {
       return html`
         <ha-card>
           <div style="padding: 16px;">
-            Zone Airzone introuvable : ${zone}
+            Zone ${zone} introuvable
           </div>
         </ha-card>
       `;
     }
 
-    const zoneName =
+    const name =
       this.config.name ||
-      this.hass.states[
-        `sensor.airzone_zone_${zone}_nom`
-      ]?.state ||
+      nameEntity.state ||
       `Zone ${zone}`;
 
     const temperature =
-      temperatureEntity?.state ?? "—";
+      temperatureEntity?.state !== undefined
+        ? `${temperatureEntity.state} °C`
+        : "";
 
     const humidity =
-      humidityEntity?.state ?? "—";
+      humidityEntity?.state !== undefined
+        ? `${humidityEntity.state} %`
+        : "";
 
     return html`
       <ha-card>
@@ -149,19 +115,12 @@ class AirzoneThermostatCard extends LitElement {
           >
 
           <div class="zone-name">
-            ${zoneName}
+            ${name}
           </div>
 
-          <div class="zone-info">
-
-            <div class="temperature">
-              ${temperature} °C
-            </div>
-
-            <div class="humidity">
-              ${humidity} %
-            </div>
-
+          <div class="info-line">
+            <span>${temperature}</span>
+            <span>${humidity}</span>
           </div>
 
         </div>

@@ -52,6 +52,13 @@ class AirzoneThermostatCard extends LitElement {
       font-weight: 500;
     }
 
+    /*
+     * Indicateur d'offset
+     *
+     * Les 6 barres ont toutes le même point
+     * de départ horizontal.
+     */
+
     .offset-line {
       position: absolute;
       top: 16%;
@@ -60,35 +67,73 @@ class AirzoneThermostatCard extends LitElement {
 
       display: flex;
       align-items: center;
-      gap: 4px;
+      justify-content: center;
 
-      height: 20px;
+      width: 60px;
+      height: 40px;
     }
 
-    .offset-marker {
-      display: block;
+    .offset-bars {
+      position: relative;
+
+      width: 60px;
+      height: 40px;
+    }
+
+    .offset-bar {
+      position: absolute;
+
+      left: 50%;
+
       width: 3px;
+
       background: currentColor;
+
       border-radius: 2px;
+
+      transform: translateX(-50%);
     }
 
-    .offset-marker.small {
+    /*
+     * Barres vers le bas
+     *
+     * Le point de départ est identique.
+     */
+
+    .offset-bar.down.small {
+      top: 20px;
       height: 7px;
     }
 
-    .offset-marker.medium {
+    .offset-bar.down.medium {
+      top: 20px;
       height: 11px;
     }
 
-    .offset-marker.large {
+    .offset-bar.down.large {
+      top: 20px;
       height: 15px;
     }
 
-    .offset-center {
-      width: 7px;
+    /*
+     * Barres vers le haut
+     *
+     * Le point de départ est identique.
+     */
+
+    .offset-bar.up.small {
+      bottom: 20px;
       height: 7px;
-      border-radius: 50%;
-      background: currentColor;
+    }
+
+    .offset-bar.up.medium {
+      bottom: 20px;
+      height: 11px;
+    }
+
+    .offset-bar.up.large {
+      bottom: 20px;
+      height: 15px;
     }
   `;
 
@@ -112,7 +157,9 @@ class AirzoneThermostatCard extends LitElement {
     const zone = this.config.zone;
 
     const nameEntity =
-      this.hass.states[`sensor.airzone_zone_${zone}_nom`];
+      this.hass.states[
+        `sensor.airzone_zone_${zone}_nom`
+      ];
 
     const temperatureEntity =
       this.hass.states[
@@ -178,47 +225,45 @@ class AirzoneThermostatCard extends LitElement {
 
           <div class="offset-line">
 
-            ${offset <= -3
-              ? html`
-                  <span class="offset-marker large"></span>
-                `
-              : ""}
+            <div class="offset-bars">
 
-            ${offset <= -2
-              ? html`
-                  <span class="offset-marker medium"></span>
-                `
-              : ""}
+              ${offset <= -3
+                ? html`
+                    <span class="offset-bar down large"></span>
+                  `
+                : ""}
 
-            ${offset <= -1
-              ? html`
-                  <span class="offset-marker small"></span>
-                `
-              : ""}
+              ${offset <= -2
+                ? html`
+                    <span class="offset-bar down medium"></span>
+                  `
+                : ""}
 
-            ${offset === 0
-              ? html`
-                  <span class="offset-center"></span>
-                `
-              : ""}
+              ${offset <= -1
+                ? html`
+                    <span class="offset-bar down small"></span>
+                  `
+                : ""}
 
-            ${offset >= 1
-              ? html`
-                  <span class="offset-marker small"></span>
-                `
-              : ""}
+              ${offset >= 1
+                ? html`
+                    <span class="offset-bar up small"></span>
+                  `
+                : ""}
 
-            ${offset >= 2
-              ? html`
-                  <span class="offset-marker medium"></span>
-                `
-              : ""}
+              ${offset >= 2
+                ? html`
+                    <span class="offset-bar up medium"></span>
+                  `
+                : ""}
 
-            ${offset >= 3
-              ? html`
-                  <span class="offset-marker large"></span>
-                `
-              : ""}
+              ${offset >= 3
+                ? html`
+                    <span class="offset-bar up large"></span>
+                  `
+                : ""}
+
+            </div>
 
           </div>
 

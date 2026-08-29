@@ -148,8 +148,7 @@ class AirzoneThermostatCard extends LitElement {
     /*
      * Zones de clic de l'offset
      *
-     * Pour l'instant elles sont visibles afin
-     * de pouvoir ajuster facilement leur position.
+     * VISIBLES POUR LE MOMENT
      */
 
     .offset-click-zone {
@@ -165,19 +164,13 @@ class AirzoneThermostatCard extends LitElement {
       background: rgba(128, 128, 128, 0.15);
 
       box-sizing: border-box;
-    }
 
-    /*
-     * Zone gauche = diminution de l'offset
-     */
+      z-index: 2;
+    }
 
     .offset-click-zone.left {
       left: -30px;
     }
-
-    /*
-     * Zone droite = augmentation de l'offset
-     */
 
     .offset-click-zone.right {
       right: -30px;
@@ -248,6 +241,62 @@ class AirzoneThermostatCard extends LitElement {
     };
 
     this.dispatchEvent(event);
+  }
+
+  /*
+   * Modifie l'offset du thermostat
+   *
+   * direction = -1 → offset -1
+   * direction = +1 → offset +1
+   */
+
+  async _changeOffset(direction) {
+    if (!this.hass || !this.config) {
+      return;
+    }
+
+    const zone = this.config.zone;
+
+    const entityId =
+      `number.airzone_zone_${zone}_offset_thermostat`;
+
+    const entity = this.hass.states[entityId];
+
+    if (!entity) {
+      return;
+    }
+
+    const currentOffset = Number(entity.state);
+
+    if (Number.isNaN(currentOffset)) {
+      return;
+    }
+
+    const newOffset =
+      Math.max(
+        -3,
+        Math.min(
+          3,
+          currentOffset + direction
+        )
+      );
+
+    /*
+     * Rien à faire si on est déjà à la limite.
+     */
+
+    if (newOffset === currentOffset) {
+      return;
+    }
+
+    await this.hass.callService(
+      "number",
+      "set_value",
+      {
+        entity_id: entityId,
+        value: newOffset,
+      }
+    );
   }
 
   render() {
@@ -390,18 +439,20 @@ class AirzoneThermostatCard extends LitElement {
 
           <div class="offset-line">
 
-            <!-- ZONE DE CLIC GAUCHE -->
+            <!-- Zone de clic gauche -->
 
             <div
               class="offset-click-zone left clickable"
-              @click=${() => console.log("OFFSET -1")}
+              @click=${() =>
+                this._changeOffset(-1)}
             ></div>
 
-            <!-- ZONE DE CLIC DROITE -->
+            <!-- Zone de clic droite -->
 
             <div
               class="offset-click-zone right clickable"
-              @click=${() => console.log("OFFSET +1")}
+              @click=${() =>
+                this._changeOffset(1)}
             ></div>
 
             <!-- Barres -->

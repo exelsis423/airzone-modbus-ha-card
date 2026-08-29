@@ -52,6 +52,11 @@ class AirzoneThermostatCard extends LitElement {
       font-weight: 500;
     }
 
+    .info-item {
+      cursor: pointer;
+      user-select: none;
+    }
+
     /*
      * Indicateur d'offset
      */
@@ -128,7 +133,7 @@ class AirzoneThermostatCard extends LitElement {
     }
 
     /*
-     * État de la LED du thermostat
+     * État de la LED
      */
 
     .led-status {
@@ -141,6 +146,9 @@ class AirzoneThermostatCard extends LitElement {
       justify-content: center;
 
       font-size: 20px;
+
+      cursor: pointer;
+      user-select: none;
     }
 
     .led-status ha-icon {
@@ -158,6 +166,22 @@ class AirzoneThermostatCard extends LitElement {
 
   getCardSize() {
     return 4;
+  }
+
+  _showMoreInfo(entityId) {
+    if (!entityId || !this.hass) {
+      return;
+    }
+
+    const event = new CustomEvent("hass-more-info", {
+      bubbles: true,
+      composed: true,
+      detail: {
+        entityId: entityId,
+      },
+    });
+
+    this.dispatchEvent(event);
   }
 
   render() {
@@ -238,8 +262,37 @@ class AirzoneThermostatCard extends LitElement {
           </div>
 
           <div class="info-line">
-            <span>${temperature}</span>
-            <span>${humidity}</span>
+
+            ${temperatureEntity
+              ? html`
+                  <span
+                    class="info-item"
+                    @click=${() =>
+                      this._showMoreInfo(
+                        temperatureEntity.entity_id
+                      )}
+                  >
+                    ${temperature}
+                  </span>
+                `
+              : html`<span></span>`
+            }
+
+            ${humidityEntity
+              ? html`
+                  <span
+                    class="info-item"
+                    @click=${() =>
+                      this._showMoreInfo(
+                        humidityEntity.entity_id
+                      )}
+                  >
+                    ${humidity}
+                  </span>
+                `
+              : html`<span></span>`
+            }
+
           </div>
 
           <div class="offset-line">
@@ -288,7 +341,13 @@ class AirzoneThermostatCard extends LitElement {
 
           ${ledEntity
             ? html`
-                <div class="led-status">
+                <div
+                  class="led-status"
+                  @click=${() =>
+                    this._showMoreInfo(
+                      ledEntity.entity_id
+                    )}
+                >
                   <ha-icon
                     icon="${ledOn
                       ? "mdi:led-on"
@@ -317,3 +376,4 @@ window.customCards.push({
   description: "Thermostat Lite Airzone",
   preview: true,
 });
+

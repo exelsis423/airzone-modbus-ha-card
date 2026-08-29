@@ -72,9 +72,6 @@ class AirzoneThermostatCard extends LitElement {
 
     /*
      * Indicateur d'offset
-     *
-     * Toutes les dimensions sont proportionnelles
-     * à la largeur de la carte.
      */
 
     .offset-line {
@@ -189,6 +186,34 @@ class AirzoneThermostatCard extends LitElement {
 
     .offset-click-zone.right {
       right: -10cqw;
+    }
+
+    /*
+     * Cercle central
+     *
+     * Pour l'instant uniquement visuel.
+     * Il est exactement au centre entre les
+     * deux zones tactiles de l'offset.
+     */
+
+    .offset-center {
+      position: absolute;
+
+      left: 50%;
+      top: 50%;
+
+      transform: translate(-50%, -50%);
+
+      width: 4cqw;
+      height: 4cqw;
+
+      border-radius: 50%;
+
+      background: rgba(128, 128, 128, 0.5);
+
+      z-index: 3;
+
+      pointer-events: none;
     }
 
     /*
@@ -471,6 +496,10 @@ class AirzoneThermostatCard extends LitElement {
               @click=${() =>
                 this._changeOffset(1)}
             ></div>
+
+            <!-- Cercle central -->
+
+            <div class="offset-center"></div>
 
             <!-- Barres -->
 

@@ -1,6 +1,27 @@
 import { LitElement, html, css } from "https://unpkg.com/lit?module";
 
-class AirzoneThermostatCard extends HTMLElement {
+class AirzoneThermostatCard extends extends LitElement {
+
+  static properties = {
+    hass: {},
+    config: {},
+    graphEntity: {},
+    historyData: {}
+  };
+
+  static styles = css`
+
+    ha-card {
+      border-radius: 20px;
+      overflow: hidden;
+      border: none;
+    }
+
+  `;
+
+  setConfig(config) {
+    this.config = config;
+  }
 
   setConfig(config) {
     if (!config.entity) {
@@ -39,7 +60,7 @@ class AirzoneThermostatCard extends HTMLElement {
       return;
     }
 
-    this.content.innerHTML = `
+    return html`
       <style>
         ha-card {
           overflow: hidden;
@@ -63,9 +84,6 @@ class AirzoneThermostatCard extends HTMLElement {
     `;
   }
 
-  getCardSize() {
-    return 4;
-  }
 }
 
 

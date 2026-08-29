@@ -1,27 +1,30 @@
 import { LitElement, html, css } from "https://unpkg.com/lit?module";
 
-class AirzoneThermostatCard extends extends LitElement {
+class AirzoneThermostatCard extends LitElement {
 
   static properties = {
     hass: {},
     config: {},
-    graphEntity: {},
-    historyData: {}
   };
 
   static styles = css`
-
     ha-card {
       border-radius: 20px;
       overflow: hidden;
       border: none;
     }
 
-  `;
+    .thermostat {
+      position: relative;
+      width: 100%;
+    }
 
-  setConfig(config) {
-    this.config = config;
-  }
+    .thermostat img {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+  `;
 
   setConfig(config) {
     if (!config.entity) {
@@ -29,63 +32,51 @@ class AirzoneThermostatCard extends extends LitElement {
     }
 
     this.config = config;
-
-    if (!this.content) {
-      this.attachShadow({ mode: "open" });
-      this.content = document.createElement("ha-card");
-      this.shadowRoot.appendChild(this.content);
-    }
-
-    this.render();
   }
 
-  set hass(hass) {
-    this._hass = hass;
-    this.render();
+  getCardSize() {
+    return 4;
   }
 
   render() {
-    if (!this._hass || !this.config) {
-      return;
+    if (!this.hass || !this.config) {
+      return html``;
     }
 
-    const entity = this._hass.states[this.config.entity];
+    const entity = this.hass.states[this.config.entity];
 
     if (!entity) {
-      this.content.innerHTML = `
-        <div style="padding: 16px;">
-          Entité introuvable : ${this.config.entity}
-        </div>
+      return html`
+        <ha-card>
+          <div style="padding: 16px;">
+            Entité introuvable : ${this.config.entity}
+          </div>
+        </ha-card>
       `;
-      return;
     }
 
     return html`
-      <style>
-        ha-card {
-          overflow: hidden;
-        }
-
-        .thermostat {
-          position: relative;
-          width: 100%;
-        }
-
-        .thermostat img {
-          display: block;
-          width: 100%;
-          height: auto;
-        }
-      </style>
-
-      <div class="thermostat">
-        <img src="https://raw.githubusercontent.com/exelsis423/airzone-modbus-ha-card/main/images/airzone-thermostat-lite.jpg">
-      </div>
+      <ha-card>
+        <div class="thermostat">
+          <img
+            src="https://raw.githubusercontent.com/exelsis423/airzone-modbus-ha-card/main/images/airzone-thermostat-lite.jpg"
+          >
+        </div>
+      </ha-card>
     `;
   }
-
 }
 
+customElements.define(
+  "airzone-thermostat-card",
+  AirzoneThermostatCard
+);
 
+window.customCards = window.customCards || [];
 
-customElements.define('airzone-modbus-card', AirzoneModbusCard);
+window.customCards.push({
+  type: "airzone-thermostat-card",
+  name: "Airzone Thermostat",
+  description: "Thermostat Lite Airzone",
+  preview: true,
+});

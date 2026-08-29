@@ -48,7 +48,7 @@ class AirzoneThermostatCard extends LitElement {
 
     .info-line {
       position: absolute;
-      top: 10%;
+      top: 15%;
       left: 8%;
       right: 8%;
 
@@ -81,7 +81,7 @@ class AirzoneThermostatCard extends LitElement {
 
       transform: translateX(-50%);
 
-      width: 30cqw;
+      width: 43cqw;
       height: 13.33cqw;
     }
 

@@ -1,7 +1,7 @@
 {
   "name": "Airzone Modbus HA Card",
   "content_in_root": false,
-  "filename": "dist/airzone-modbus-ha-card.js",
-  "render_readme": true
+  "filename": "airzone-modbus-ha-card.js",
+  "render_readme": true,
   "homeassistant": "2026.1.0"
 }

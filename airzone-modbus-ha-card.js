@@ -103,9 +103,6 @@ class AirzoneThermostatCard extends LitElement {
 
     /*
      * Barres vers le bas
-     *
-     * Les trois barres partent du même axe
-     * mais sont décalées horizontalement.
      */
 
     .offset-bar.down.small {
@@ -146,6 +143,44 @@ class AirzoneThermostatCard extends LitElement {
       left: 26px;
       bottom: 20px;
       height: 15px;
+    }
+
+    /*
+     * Zones de clic de l'offset
+     *
+     * Pour l'instant elles sont visibles afin
+     * de pouvoir ajuster facilement leur position.
+     */
+
+    .offset-click-zone {
+      position: absolute;
+
+      top: 0;
+      width: 28px;
+      height: 40px;
+
+      border: 1px dashed currentColor;
+      border-radius: 6px;
+
+      background: rgba(128, 128, 128, 0.15);
+
+      box-sizing: border-box;
+    }
+
+    /*
+     * Zone gauche = diminution de l'offset
+     */
+
+    .offset-click-zone.left {
+      left: -30px;
+    }
+
+    /*
+     * Zone droite = augmentation de l'offset
+     */
+
+    .offset-click-zone.right {
+      right: -30px;
     }
 
     /*
@@ -310,6 +345,7 @@ class AirzoneThermostatCard extends LitElement {
 
     return html`
       <ha-card>
+
         <div class="thermostat">
 
           <!-- Image du thermostat -->
@@ -353,6 +389,22 @@ class AirzoneThermostatCard extends LitElement {
           <!-- Offset -->
 
           <div class="offset-line">
+
+            <!-- ZONE DE CLIC GAUCHE -->
+
+            <div
+              class="offset-click-zone left clickable"
+              @click=${() => console.log("OFFSET -1")}
+            ></div>
+
+            <!-- ZONE DE CLIC DROITE -->
+
+            <div
+              class="offset-click-zone right clickable"
+              @click=${() => console.log("OFFSET +1")}
+            ></div>
+
+            <!-- Barres -->
 
             <div class="offset-bars">
 
@@ -441,6 +493,7 @@ class AirzoneThermostatCard extends LitElement {
             : ""}
 
         </div>
+
       </ha-card>
     `;
   }
@@ -459,3 +512,4 @@ window.customCards.push({
   description: "Thermostat Lite Airzone",
   preview: true,
 });
+

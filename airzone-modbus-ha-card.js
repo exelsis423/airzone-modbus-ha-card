@@ -219,6 +219,10 @@ class AirzoneThermostatCard extends LitElement {
 
     /*
      * Couleur selon l'état de la zone
+     *
+     * Zone arrêtée       → violet
+     * Refroidissement    → bleu
+     * Chauffage          → rouge
      */
 
     .offset-center.off {
@@ -235,6 +239,9 @@ class AirzoneThermostatCard extends LitElement {
 
     /*
      * Machine à l'arrêt
+     *
+     * Le clignotement dépend uniquement
+     * du mode de la machine.
      */
 
     .offset-center.machine-off {
@@ -324,10 +331,6 @@ class AirzoneThermostatCard extends LitElement {
       white-space: nowrap;
 
       text-align: center;
-
-      /*
-       * La température est maintenant cliquable.
-       */
 
       cursor: pointer;
       user-select: none;
@@ -482,8 +485,7 @@ class AirzoneThermostatCard extends LitElement {
 
     /*
      * Option sélectionnée :
-     * fond beaucoup plus transparent pour
-     * garder l'icône et le texte bien visibles.
+     * fond beaucoup plus transparent
      */
 
     .dialog-option.selected {
@@ -743,15 +745,27 @@ class AirzoneThermostatCard extends LitElement {
         `switch.airzone_zone_${zone}_led_thermostat`
       ];
 
+    /*
+     * État de la zone
+     */
+
     const zoneStateEntity =
       this.hass.states[
         `switch.airzone_zone_${zone}_etat`
       ];
 
+    /*
+     * Mode de la zone
+     */
+
     const zoneModeEntity =
       this.hass.states[
         `select.airzone_zone_${zone}_mode`
       ];
+
+    /*
+     * Mode de la machine
+     */
 
     const machineModeEntity =
       this.hass.states[
@@ -791,6 +805,12 @@ class AirzoneThermostatCard extends LitElement {
     const ledOn =
       ledEntity?.state === "on";
 
+    /*
+     * ============================================================
+     * ÉTATS DE LA ZONE ET DE LA MACHINE
+     * ============================================================
+     */
+
     const zoneIsOn =
       zoneStateEntity?.state === "on";
 
@@ -799,6 +819,20 @@ class AirzoneThermostatCard extends LitElement {
 
     const machineMode =
       machineModeEntity?.state;
+
+    /*
+     * ============================================================
+     * COULEUR DU CERCLE
+     * ============================================================
+     *
+     * La couleur dépend UNIQUEMENT de la zone :
+     *
+     * Zone arrêtée       → violet
+     * Refroidissement    → bleu
+     * Chauffage          → rouge
+     *
+     * Le mode de la machine n'intervient pas.
+     */
 
     let ringState = "off";
 
@@ -811,6 +845,18 @@ class AirzoneThermostatCard extends LitElement {
         ringState = "heating";
       }
     }
+
+    /*
+     * ============================================================
+     * CLIGNOTEMENT
+     * ============================================================
+     *
+     * Le clignotement dépend UNIQUEMENT
+     * de la machine :
+     *
+     * Machine à l'arrêt → clignote
+     * Machine en marche  → fixe
+     */
 
     const machineIsOff =
       machineMode === "Arrêt";

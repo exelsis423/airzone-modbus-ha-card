@@ -37,7 +37,7 @@ class AirzoneThermostatCard extends LitElement {
       left: 50%;
       transform: translateX(-50%);
 
-      font-size: clamp(12px, 4.5cqw, 22px);
+      font-size: clamp(12px, 6.5cqw, 40px);
       font-weight: 500;
       text-align: center;
 
@@ -97,7 +97,7 @@ class AirzoneThermostatCard extends LitElement {
     .offset-bar {
       position: absolute;
 
-      width: 1cqw;
+      width: 1.4cqw;
 
       background: currentColor;
 
@@ -207,7 +207,7 @@ class AirzoneThermostatCard extends LitElement {
 
       border-radius: 50%;
 
-      border: 1cqw solid currentColor;
+      border: 1.4cqw solid currentColor;
 
       background: transparent;
 
@@ -221,15 +221,15 @@ class AirzoneThermostatCard extends LitElement {
      */
 
     .offset-center.off {
-      color: #9c27b0;
+      color: rgb(208, 100, 227);
     }
 
     .offset-center.cooling {
-      color: #2196f3;
+      color: rgb(5, 137, 242);
     }
 
     .offset-center.heating {
-      color: #f44336;
+      color: rgb(242, 32, 17);
     }
 
     /*
@@ -237,7 +237,7 @@ class AirzoneThermostatCard extends LitElement {
      */
 
     .offset-center.machine-off {
-      animation: ring-blink 1.2s ease-in-out infinite;
+      animation: ring-blink 2.3s ease-in-out infinite;
     }
 
     @keyframes ring-blink {
@@ -247,7 +247,7 @@ class AirzoneThermostatCard extends LitElement {
       }
 
       50% {
-        opacity: 0.15;
+        opacity: 0.1;
       }
     }
 

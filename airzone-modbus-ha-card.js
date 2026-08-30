@@ -305,6 +305,30 @@ class AirzoneThermostatCard extends LitElement {
     }
 
     /*
+     * Température Blueface
+     */
+
+    .blueface-temperature {
+      position: absolute;
+
+      left: 50%;
+      top: 50%;
+
+      transform: translate(-50%, -50%);
+
+      color: white;
+
+      font-size: clamp(16px, 9cqw, 48px);
+      font-weight: 500;
+
+      white-space: nowrap;
+
+      text-align: center;
+
+      pointer-events: none;
+    }
+
+    /*
      * Commandes Blueface
      */
 
@@ -355,7 +379,8 @@ class AirzoneThermostatCard extends LitElement {
 
       border-radius: 50%;
 
-      background: rgba(128, 128, 128, 0.15);
+      background: rgba(255, 255, 255, 0.15);
+
       color: white;
 
       transition:
@@ -365,11 +390,12 @@ class AirzoneThermostatCard extends LitElement {
 
     .blueface-control:hover .blueface-icon {
       transform: scale(1.08);
-      background: rgba(128, 128, 128, 0.25);
+      background: rgba(255, 255, 255, 0.25);
     }
 
     .blueface-icon ha-icon {
       --mdc-icon-size: 14cqw;
+      color: white;
     }
 
     /*
@@ -450,20 +476,19 @@ class AirzoneThermostatCard extends LitElement {
     }
 
     /*
-     * Option actuellement sélectionnée
-     *
-     * Fond volontairement très transparent pour que
-     * la couleur de l'icône et du texte reste bien visible.
+     * Option sélectionnée :
+     * fond beaucoup plus transparent pour
+     * garder l'icône et le texte bien visibles.
      */
 
     .dialog-option.selected {
-      background: rgba(255, 255, 255, 0.12);
+      background: color-mix(
+        in srgb,
+        var(--primary-color) 18%,
+        transparent
+      );
 
       color: var(--primary-color);
-
-      box-shadow:
-        inset 0 0 0 1px
-        rgba(255, 255, 255, 0.25);
     }
 
     .dialog-option ha-icon {
@@ -939,10 +964,38 @@ class AirzoneThermostatCard extends LitElement {
 
   _renderBlueface() {
 
+    const zone = this.config.zone;
+
+    /*
+     * Température de la zone définie dans le YAML.
+     *
+     * Exemple :
+     * thermostat: blueface
+     * zone: 4
+     */
+
+    const temperatureEntity =
+      this.hass.states[
+        `sensor.airzone_zone_${zone}_temperature_sonde`
+      ];
+
+    const temperature =
+      temperatureEntity?.state !== undefined
+        ? `${temperatureEntity.state} °C`
+        : "";
+
+    /*
+     * Mode machine
+     */
+
     const modeEntity =
       this.hass.states[
         "select.airzone_mode"
       ];
+
+    /*
+     * Vitesse machine
+     */
 
     const speedEntity =
       this.hass.states[
@@ -979,6 +1032,16 @@ class AirzoneThermostatCard extends LitElement {
           <img
             src="https://raw.githubusercontent.com/exelsis423/airzone-modbus-ha-card/main/images/airzone-blueface.png"
           >
+
+          <!-- Température de la zone -->
+
+          ${temperature
+            ? html`
+                <div class="blueface-temperature">
+                  ${temperature}
+                </div>
+              `
+            : ""}
 
           <!-- Commandes -->
 
@@ -1174,4 +1237,3 @@ window.customCards.push({
   description: "Thermostat Lite / Blueface",
   preview: true,
 });
-

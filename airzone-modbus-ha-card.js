@@ -260,6 +260,33 @@ class AirzoneThermostatCard extends LitElement {
     }
 
     /*
+     * État de la zone
+     *
+     * Affiché sous l'anneau :
+     * ON  = zone active
+     * OFF = zone inactive
+     */
+
+    .zone-state {
+      position: absolute;
+
+      left: 50%;
+      top: 57%;
+
+      transform: translateX(-50%);
+
+      font-size: clamp(10px, 4.5cqw, 20px);
+      font-weight: 600;
+
+      text-align: center;
+
+      cursor: pointer;
+      user-select: none;
+
+      white-space: nowrap;
+    }
+
+    /*
      * LED thermostat
      */
 
@@ -748,7 +775,8 @@ class AirzoneThermostatCard extends LitElement {
 
     /*
      * État de la ZONE
-     * -> détermine uniquement le clignotement
+     * -> détermine le clignotement
+     * -> affiché sous l'anneau
      */
 
     const zoneStateEntity =
@@ -809,6 +837,17 @@ class AirzoneThermostatCard extends LitElement {
       zoneStateEntity?.state === "off";
 
     /*
+     * Texte affiché :
+     * ON si la zone est active
+     * OFF dans tous les autres cas
+     */
+
+    const zoneState =
+      zoneStateEntity?.state === "on"
+        ? "ON"
+        : "OFF";
+
+    /*
      * Mode de la machine :
      * Arrêt           = violet
      * Refroidissement  = bleu
@@ -835,6 +874,7 @@ class AirzoneThermostatCard extends LitElement {
        * Arrêt, indisponible ou valeur inconnue :
        * violet par défaut
        */
+
       ringState = "off";
     }
 
@@ -958,6 +998,18 @@ class AirzoneThermostatCard extends LitElement {
 
             </div>
 
+          </div>
+
+          <!-- État de la zone -->
+
+          <div
+            class="zone-state clickable"
+            @click=${() =>
+              this._showMoreInfo(
+                `switch.airzone_zone_${zone}_etat`
+              )}
+          >
+            ${zoneState}
           </div>
 
           ${ledEntity
@@ -1271,4 +1323,3 @@ window.customCards.push({
   description: "Thermostat Lite / Blueface",
   preview: true,
 });
-

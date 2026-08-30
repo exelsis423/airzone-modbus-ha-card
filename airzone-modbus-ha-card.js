@@ -218,11 +218,12 @@ class AirzoneThermostatCard extends LitElement {
     }
 
     /*
-     * Couleur selon l'état de la zone
+     * Couleur selon le mode de la MACHINE
      *
-     * Zone arrêtée       → violet
-     * Refroidissement    → bleu
-     * Chauffage          → rouge
+     * Arrêt           -> violet
+     * Refroidissement -> bleu
+     * Chauffage       -> rouge
+     * Ventilation     -> bleu
      */
 
     .offset-center.off {
@@ -238,13 +239,12 @@ class AirzoneThermostatCard extends LitElement {
     }
 
     /*
-     * Machine à l'arrêt
-     *
-     * Le clignotement dépend uniquement
-     * du mode de la machine.
+     * Machine / zone à l'arrêt :
+     * le clignotement dépend de L'ÉTAT DE LA ZONE,
+     * pas du mode de la machine.
      */
 
-    .offset-center.machine-off {
+    .offset-center.zone-off {
       animation: ring-blink 2.3s ease-in-out infinite;
     }
 
@@ -485,7 +485,8 @@ class AirzoneThermostatCard extends LitElement {
 
     /*
      * Option sélectionnée :
-     * fond beaucoup plus transparent
+     * fond beaucoup plus transparent pour
+     * garder l'icône et le texte bien visibles.
      */
 
     .dialog-option.selected {
@@ -746,7 +747,8 @@ class AirzoneThermostatCard extends LitElement {
       ];
 
     /*
-     * État de la zone
+     * État de la ZONE
+     * -> détermine uniquement le clignotement
      */
 
     const zoneStateEntity =
@@ -755,16 +757,8 @@ class AirzoneThermostatCard extends LitElement {
       ];
 
     /*
-     * Mode de la zone
-     */
-
-    const zoneModeEntity =
-      this.hass.states[
-        `select.airzone_zone_${zone}_mode`
-      ];
-
-    /*
-     * Mode de la machine
+     * Mode de la MACHINE
+     * -> détermine uniquement la couleur
      */
 
     const machineModeEntity =
@@ -806,65 +800,48 @@ class AirzoneThermostatCard extends LitElement {
       ledEntity?.state === "on";
 
     /*
-     * ============================================================
-     * ÉTATS DE LA ZONE ET DE LA MACHINE
-     * ============================================================
+     * État de la zone :
+     * OFF = clignotement
+     * ON  = fixe
      */
 
-    const zoneIsOn =
-      zoneStateEntity?.state === "on";
+    const zoneIsOff =
+      zoneStateEntity?.state === "off";
 
-    const zoneMode =
-      zoneModeEntity?.state;
+    /*
+     * Mode de la machine :
+     * Arrêt           = violet
+     * Refroidissement  = bleu
+     * Chauffage        = rouge
+     * Ventilation      = bleu
+     */
 
     const machineMode =
       machineModeEntity?.state;
 
-    /*
-     * ============================================================
-     * COULEUR DU CERCLE
-     * ============================================================
-     *
-     * La couleur dépend UNIQUEMENT de la zone :
-     *
-     * Zone arrêtée       → violet
-     * Refroidissement    → bleu
-     * Chauffage          → rouge
-     *
-     * Le mode de la machine n'intervient pas.
-     */
-
     let ringState = "off";
 
-    if (zoneIsOn) {
+    if (machineMode === "Refroidissement") {
+      ringState = "cooling";
 
-      if (zoneMode === "Refroidissement") {
-        ringState = "cooling";
+    } else if (machineMode === "Chauffage") {
+      ringState = "heating";
 
-      } else if (zoneMode === "Chauffage") {
-        ringState = "heating";
-      }
+    } else if (machineMode === "Ventilation") {
+      ringState = "cooling";
+
+    } else {
+      /*
+       * Arrêt, indisponible ou valeur inconnue :
+       * violet par défaut
+       */
+      ringState = "off";
     }
-
-    /*
-     * ============================================================
-     * CLIGNOTEMENT
-     * ============================================================
-     *
-     * Le clignotement dépend UNIQUEMENT
-     * de la machine :
-     *
-     * Machine à l'arrêt → clignote
-     * Machine en marche  → fixe
-     */
-
-    const machineIsOff =
-      machineMode === "Arrêt";
 
     const ringClass = [
       "offset-center",
       ringState,
-      machineIsOff ? "machine-off" : "",
+      zoneIsOff ? "zone-off" : "",
       "clickable",
     ]
       .filter(Boolean)

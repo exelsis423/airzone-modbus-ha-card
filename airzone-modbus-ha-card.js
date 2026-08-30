@@ -318,7 +318,7 @@ class AirzoneThermostatCard extends LitElement {
 
       color: white;
 
-      font-size: clamp(16px, 9cqw, 48px);
+      font-size: clamp(16px, 18cqw, 64px);
       font-weight: 500;
 
       white-space: nowrap;

@@ -9,9 +9,11 @@ class AirzoneThermostatCard extends LitElement {
 
   static styles = css`
     ha-card {
-      border-radius: 20px;
-      overflow: hidden;
+      background: transparent;
       border: none;
+      box-shadow: none;
+      border-radius: 0;
+      overflow: hidden;
     }
 
     .thermostat {

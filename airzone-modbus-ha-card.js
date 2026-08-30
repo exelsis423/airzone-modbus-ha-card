@@ -325,7 +325,12 @@ class AirzoneThermostatCard extends LitElement {
 
       text-align: center;
 
-      pointer-events: none;
+      /*
+       * La température est maintenant cliquable.
+       */
+
+      cursor: pointer;
+      user-select: none;
     }
 
     /*
@@ -1037,7 +1042,13 @@ class AirzoneThermostatCard extends LitElement {
 
           ${temperature
             ? html`
-                <div class="blueface-temperature">
+                <div
+                  class="blueface-temperature clickable"
+                  @click=${() =>
+                    this._showMoreInfo(
+                      `sensor.airzone_zone_${zone}_temperature_sonde`
+                    )}
+                >
                   ${temperature}
                 </div>
               `
@@ -1237,3 +1248,4 @@ window.customCards.push({
   description: "Thermostat Lite / Blueface",
   preview: true,
 });
+

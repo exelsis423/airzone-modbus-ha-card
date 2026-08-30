@@ -214,8 +214,6 @@ class AirzoneThermostatCard extends LitElement {
       box-sizing: border-box;
 
       z-index: 3;
-
-      pointer-events: none;
     }
 
     /*
@@ -619,7 +617,13 @@ class AirzoneThermostatCard extends LitElement {
 
             <!-- Anneau central -->
 
-            <div class="${ringClass}"></div>
+            <div
+              class="${ringClass} clickable"
+              @click=${() =>
+                this._showMoreInfo(
+                  `switch.airzone_zone_${zone}_etat`
+                )}
+            ></div>
 
             <!-- Barres -->
 

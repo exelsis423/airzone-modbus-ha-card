@@ -751,11 +751,11 @@ class AirzoneThermostatCard extends LitElement {
   }
 
   /*
+```javascript
+  /*
    * ============================================================
    * CARTE BLUEFACE
    * ============================================================
-   *
-   * Pour l'instant, uniquement un emplacement.
    */
 
   _renderBlueface() {
@@ -765,17 +765,17 @@ class AirzoneThermostatCard extends LitElement {
 
         <div class="blueface">
 
-          <!--
-           * Carte Blueface à construire
-           *
-           * La structure sera ajoutée ici.
-           -->
+          <img
+            src="https://raw.githubusercontent.com/exelsis423/airzone-modbus-ha-card/main/images/airzone-blueface.png"
+          >
 
         </div>
 
       </ha-card>
     `;
   }
+
+
 
   /*
    * ============================================================

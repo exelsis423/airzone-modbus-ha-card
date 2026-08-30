@@ -285,6 +285,22 @@ class AirzoneThermostatCard extends LitElement {
       opacity: 0.25;
       box-shadow: none;
     }
+
+    /*
+     * Blueface
+     *
+     * Temporaire : emplacement réservé
+     */
+
+    .blueface {
+      position: relative;
+      width: 100%;
+    }
+
+    .blueface img {
+      display: block;
+      width: 100%;
+    }
   `;
 
   setConfig(config) {
@@ -292,7 +308,18 @@ class AirzoneThermostatCard extends LitElement {
       throw new Error("Le numéro de zone est obligatoire");
     }
 
-    this.config = config;
+    const thermostat = config.thermostat || "lite";
+
+    if (!["lite", "blueface"].includes(thermostat)) {
+      throw new Error(
+        "Le thermostat doit être 'lite' ou 'blueface'"
+      );
+    }
+
+    this.config = {
+      ...config,
+      thermostat,
+    };
   }
 
   getCardSize() {
@@ -376,10 +403,13 @@ class AirzoneThermostatCard extends LitElement {
     );
   }
 
-  render() {
-    if (!this.hass || !this.config) {
-      return html``;
-    }
+  /*
+   * ============================================================
+   * CARTE LITE
+   * ============================================================
+   */
+
+  _renderLite() {
 
     const zone = this.config.zone;
 
@@ -548,6 +578,7 @@ class AirzoneThermostatCard extends LitElement {
       "offset-center",
       ringState,
       machineIsOff ? "machine-off" : "",
+      "clickable",
     ]
       .filter(Boolean)
       .join(" ");
@@ -618,7 +649,7 @@ class AirzoneThermostatCard extends LitElement {
             <!-- Anneau central -->
 
             <div
-              class="${ringClass} clickable"
+              class="${ringClass}"
               @click=${() =>
                 this._showMoreInfo(
                   `switch.airzone_zone_${zone}_etat`
@@ -718,6 +749,52 @@ class AirzoneThermostatCard extends LitElement {
       </ha-card>
     `;
   }
+
+  /*
+   * ============================================================
+   * CARTE BLUEFACE
+   * ============================================================
+   *
+   * Pour l'instant, uniquement un emplacement.
+   */
+
+  _renderBlueface() {
+
+    return html`
+      <ha-card>
+
+        <div class="blueface">
+
+          <!--
+           * Carte Blueface à construire
+           *
+           * La structure sera ajoutée ici.
+           -->
+
+        </div>
+
+      </ha-card>
+    `;
+  }
+
+  /*
+   * ============================================================
+   * RENDU PRINCIPAL
+   * ============================================================
+   */
+
+  render() {
+
+    if (!this.hass || !this.config) {
+      return html``;
+    }
+
+    if (this.config.thermostat === "blueface") {
+      return this._renderBlueface();
+    }
+
+    return this._renderLite();
+  }
 }
 
 customElements.define(
@@ -725,12 +802,12 @@ customElements.define(
   AirzoneThermostatCard
 );
 
-window.customCards = window.customCards || [];
+window.customCards =
+  window.customCards || [];
 
 window.customCards.push({
   type: "airzone-thermostat-card",
   name: "Airzone Thermostat",
-  description: "Thermostat Lite Airzone",
+  description: "Thermostat Lite / Blueface",
   preview: true,
 });
-

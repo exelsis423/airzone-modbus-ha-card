@@ -332,6 +332,8 @@ class AirzoneThermostatCard extends LitElement {
 
       cursor: pointer;
       user-select: none;
+
+      color: white;
     }
 
     .blueface-label {
@@ -339,6 +341,8 @@ class AirzoneThermostatCard extends LitElement {
 
       font-size: clamp(9px, 7cqw, 34px);
       font-weight: 500;
+
+      color: white;
     }
 
     .blueface-icon {
@@ -352,6 +356,7 @@ class AirzoneThermostatCard extends LitElement {
       border-radius: 50%;
 
       background: rgba(128, 128, 128, 0.15);
+      color: white;
 
       transition:
         transform 0.15s ease,
@@ -444,13 +449,21 @@ class AirzoneThermostatCard extends LitElement {
       font: inherit;
     }
 
+    /*
+     * Option actuellement sélectionnée
+     *
+     * Fond volontairement très transparent pour que
+     * la couleur de l'icône et du texte reste bien visible.
+     */
+
     .dialog-option.selected {
-      background: var(
-        --primary-color,
-        rgba(3, 169, 244, 0.2)
-      );
+      background: rgba(255, 255, 255, 0.12);
 
       color: var(--primary-color);
+
+      box-shadow:
+        inset 0 0 0 1px
+        rgba(255, 255, 255, 0.25);
     }
 
     .dialog-option ha-icon {

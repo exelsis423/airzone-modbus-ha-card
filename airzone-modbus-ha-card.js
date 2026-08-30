@@ -282,7 +282,7 @@ class AirzoneThermostatCard extends LitElement {
 
       border-radius: 50%;
 
-      background: currentColor;
+      background: rgb(242, 63, 233);
 
       box-shadow:
         0 0 0.15em currentColor,

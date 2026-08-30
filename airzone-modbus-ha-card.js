@@ -312,7 +312,7 @@ class AirzoneThermostatCard extends LitElement {
       position: absolute;
 
       left: 50%;
-      top: 73%;
+      top: 10%;
 
       transform: translateX(-50%);
 
@@ -337,13 +337,13 @@ class AirzoneThermostatCard extends LitElement {
     .blueface-label {
       margin-bottom: 1cqw;
 
-      font-size: clamp(9px, 3cqw, 16px);
+      font-size: clamp(9px, 7cqw, 34px);
       font-weight: 500;
     }
 
     .blueface-icon {
-      width: 9cqw;
-      height: 9cqw;
+      width: 14cqw;
+      height: 14cqw;
 
       display: flex;
       align-items: center;
@@ -364,7 +364,7 @@ class AirzoneThermostatCard extends LitElement {
     }
 
     .blueface-icon ha-icon {
-      --mdc-icon-size: 5.5cqw;
+      --mdc-icon-size: 14cqw;
     }
 
     /*

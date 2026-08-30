@@ -106,9 +106,6 @@ class AirzoneThermostatCard extends LitElement {
 
     /*
      * Barres vers le bas
-     *
-     * Les trois barres partent du même axe
-     * mais sont décalées horizontalement.
      */
 
     .offset-bar.down.small {
@@ -165,8 +162,6 @@ class AirzoneThermostatCard extends LitElement {
 
     /*
      * Zones de clic de l'offset
-     *
-     * VISIBLES POUR LE MOMENT
      */
 
     .offset-click-zone {
@@ -196,35 +191,66 @@ class AirzoneThermostatCard extends LitElement {
     }
 
     /*
-     * Cercle central
-     *
-     * Pour l'instant uniquement visuel.
-     * Il est exactement au centre entre les
-     * deux zones tactiles de l'offset.
+     * Anneau central
      */
 
     .offset-center {
       position: absolute;
-    
+
       left: 50%;
       top: 50%;
-    
+
       transform: translate(-50%, -50%);
-    
+
       width: 12.8cqw;
       height: 12.8cqw;
-    
+
       border-radius: 50%;
-    
-      border: 1cqw solid rgba(255, 0, 0, 0.5);
-    
+
+      border: 1cqw solid currentColor;
+
       background: transparent;
-    
+
       box-sizing: border-box;
-    
+
       z-index: 3;
-    
+
       pointer-events: none;
+    }
+
+    /*
+     * Couleur selon l'état de la zone
+     */
+
+    .offset-center.off {
+      color: #9c27b0;
+    }
+
+    .offset-center.cooling {
+      color: #2196f3;
+    }
+
+    .offset-center.heating {
+      color: #f44336;
+    }
+
+    /*
+     * Machine à l'arrêt
+     */
+
+    .offset-center.machine-off {
+      animation: ring-blink 1.2s ease-in-out infinite;
+    }
+
+    @keyframes ring-blink {
+      0%,
+      100% {
+        opacity: 1;
+      }
+
+      50% {
+        opacity: 0.15;
+      }
     }
 
     /*
@@ -389,6 +415,33 @@ class AirzoneThermostatCard extends LitElement {
       ];
 
     /*
+     * État de la zone
+     */
+
+    const zoneStateEntity =
+      this.hass.states[
+        `switch.airzone_zone_${zone}_etat`
+      ];
+
+    /*
+     * Mode de la zone
+     */
+
+    const zoneModeEntity =
+      this.hass.states[
+        `select.airzone_zone_${zone}_mode`
+      ];
+
+    /*
+     * Mode de la machine
+     */
+
+    const machineModeEntity =
+      this.hass.states[
+        "select.airzone_mode"
+      ];
+
+    /*
      * Vérification de la zone
      */
 
@@ -444,6 +497,62 @@ class AirzoneThermostatCard extends LitElement {
 
     const ledOn =
       ledEntity?.state === "on";
+
+    /*
+     * ============================================================
+     * ÉTAT DE L'ANNEAU CENTRAL
+     * ============================================================
+     */
+
+    const zoneIsOn =
+      zoneStateEntity?.state === "on";
+
+    const zoneMode =
+      zoneModeEntity?.state;
+
+    const machineMode =
+      machineModeEntity?.state;
+
+    /*
+     * Par défaut : zone arrêtée → violet
+     */
+
+    let ringState = "off";
+
+    /*
+     * Si la zone est allumée,
+     * la couleur dépend du mode.
+     */
+
+    if (zoneIsOn) {
+
+      if (zoneMode === "Refroidissement") {
+        ringState = "cooling";
+
+      } else if (zoneMode === "Chauffage") {
+        ringState = "heating";
+      }
+    }
+
+    /*
+     * La machine est considérée à l'arrêt
+     * uniquement si son mode vaut "Arrêt".
+     */
+
+    const machineIsOff =
+      machineMode === "Arrêt";
+
+    /*
+     * Construction des classes CSS
+     */
+
+    const ringClass = [
+      "offset-center",
+      ringState,
+      machineIsOff ? "machine-off" : "",
+    ]
+      .filter(Boolean)
+      .join(" ");
 
     return html`
       <ha-card>
@@ -508,9 +617,9 @@ class AirzoneThermostatCard extends LitElement {
                 this._changeOffset(1)}
             ></div>
 
-            <!-- Cercle central -->
+            <!-- Anneau central -->
 
-            <div class="offset-center"></div>
+            <div class="${ringClass}"></div>
 
             <!-- Barres -->
 
@@ -620,3 +729,4 @@ window.customCards.push({
   description: "Thermostat Lite Airzone",
   preview: true,
 });
+

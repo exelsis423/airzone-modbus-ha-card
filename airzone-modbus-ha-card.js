@@ -260,11 +260,7 @@ class AirzoneThermostatCard extends LitElement {
     }
 
     /*
-     * État de la zone
-     *
-     * Affiché sous l'anneau :
-     * ON  = zone active
-     * OFF = zone inactive
+     * État ON / OFF de la zone
      */
 
     .zone-state {
@@ -284,6 +280,14 @@ class AirzoneThermostatCard extends LitElement {
       user-select: none;
 
       white-space: nowrap;
+    }
+
+    /*
+     * OFF est volontairement discret
+     */
+
+    .zone-state.off {
+      color: rgba(128, 128, 128, 0.55);
     }
 
     /*
@@ -776,7 +780,7 @@ class AirzoneThermostatCard extends LitElement {
     /*
      * État de la ZONE
      * -> détermine le clignotement
-     * -> affiché sous l'anneau
+     * -> affiche ON / OFF
      */
 
     const zoneStateEntity =
@@ -833,26 +837,25 @@ class AirzoneThermostatCard extends LitElement {
      * ON  = fixe
      */
 
-    const zoneIsOff =
-      zoneStateEntity?.state === "off";
+    const zoneIsOn =
+      zoneStateEntity?.state === "on";
 
-    /*
-     * Texte affiché :
-     * ON si la zone est active
-     * OFF dans tous les autres cas
-     */
+    const zoneIsOff =
+      !zoneIsOn;
 
     const zoneState =
-      zoneStateEntity?.state === "on"
-        ? "ON"
-        : "OFF";
+      zoneIsOn ? "ON" : "OFF";
+
+    const zoneStateClass =
+      zoneIsOn ? "" : "off";
 
     /*
      * Mode de la machine :
+     *
      * Arrêt           = violet
-     * Refroidissement  = bleu
-     * Chauffage        = rouge
-     * Ventilation      = bleu
+     * Refroidissement = bleu
+     * Chauffage       = rouge
+     * Ventilation     = bleu
      */
 
     const machineMode =
@@ -874,7 +877,6 @@ class AirzoneThermostatCard extends LitElement {
        * Arrêt, indisponible ou valeur inconnue :
        * violet par défaut
        */
-
       ringState = "off";
     }
 
@@ -1000,10 +1002,10 @@ class AirzoneThermostatCard extends LitElement {
 
           </div>
 
-          <!-- État de la zone -->
+          <!-- État ON / OFF -->
 
           <div
-            class="zone-state clickable"
+            class="zone-state ${zoneStateClass} clickable"
             @click=${() =>
               this._showMoreInfo(
                 `switch.airzone_zone_${zone}_etat`
@@ -1323,3 +1325,4 @@ window.customCards.push({
   description: "Thermostat Lite / Blueface",
   preview: true,
 });
+

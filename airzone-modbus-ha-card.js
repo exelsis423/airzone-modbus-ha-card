@@ -203,12 +203,12 @@ class AirzoneThermostatCard extends LitElement {
 
       transform: translate(-50%, -50%);
 
-      width: 12.8cqw;
-      height: 12.8cqw;
+      width: 13cqw;
+      height: 13cqw;
 
       border-radius: 50%;
 
-      border: 1.4cqw solid currentColor;
+      border: 1.5cqw solid currentColor;
 
       background: transparent;
 

@@ -327,6 +327,22 @@ class AirzoneThermostatCard extends LitElement {
 
     /*
      * ============================================================
+     * ACTION GLOBALE DE LA CARTE
+     * ============================================================
+     */
+
+    .card-tap-action {
+      position: absolute;
+
+      inset: 0;
+
+      z-index: 100;
+
+      cursor: pointer;
+    }
+
+    /*
+     * ============================================================
      * BLUEFACE
      * ============================================================
      */
@@ -356,7 +372,7 @@ class AirzoneThermostatCard extends LitElement {
 
       color: white;
 
-      font-size: clamp(16px, 15cqw, 64px);
+      font-size: clamp(16px, 18cqw, 64px);
       font-weight: 500;
 
       white-space: nowrap;
@@ -580,6 +596,140 @@ class AirzoneThermostatCard extends LitElement {
 
   getCardSize() {
     return 4;
+  }
+
+  /*
+   * ============================================================
+   * TAP ACTION
+   * ============================================================
+   *
+   * Si tap_action est configuré, il devient l'action principale
+   * de la carte.
+   */
+
+  _hasTapAction() {
+    return (
+      this.config &&
+      this.config.tap_action &&
+      this.config.tap_action.action &&
+      this.config.tap_action.action !== "none"
+    );
+  }
+
+  async _handleTapAction() {
+
+    if (!this.hass || !this._hasTapAction()) {
+      return;
+    }
+
+    const action = this.config.tap_action;
+
+    switch (action.action) {
+
+      case "navigate":
+
+        if (action.navigation_path) {
+          history.pushState(
+            null,
+            "",
+            action.navigation_path
+          );
+
+          window.dispatchEvent(
+            new Event("location-changed")
+          );
+        }
+
+        break;
+
+      case "url":
+
+        if (action.url_path) {
+          window.open(
+            action.url_path,
+            "_blank"
+          );
+        }
+
+        break;
+
+      case "more-info":
+
+        if (action.entity) {
+          this._showMoreInfo(
+            action.entity
+          );
+        }
+
+        break;
+
+      case "call-service":
+
+        if (action.service) {
+
+          const [domain, service] =
+            action.service.split(".");
+
+          if (domain && service) {
+
+            await this.hass.callService(
+              domain,
+              service,
+              action.service_data || {}
+            );
+
+          }
+        }
+
+        break;
+
+      case "toggle":
+
+        if (action.entity) {
+
+          const entity =
+            this.hass.states[action.entity];
+
+          if (!entity) {
+            return;
+          }
+
+          await this.hass.callService(
+            "homeassistant",
+            "toggle",
+            {
+              entity_id: action.entity,
+            }
+          );
+        }
+
+        break;
+
+      default:
+        break;
+    }
+  }
+
+  /*
+   * Intercepte les clics des commandes internes lorsque
+   * tap_action est défini.
+   *
+   * Le clic interne reste prioritaire uniquement lorsque
+   * tap_action n'est PAS configuré.
+   */
+
+  _handleInternalClick(event, callback) {
+
+    if (this._hasTapAction()) {
+      event.preventDefault();
+      event.stopPropagation();
+
+      this._handleTapAction();
+
+      return;
+    }
+
+    callback();
   }
 
   /*
@@ -906,9 +1056,13 @@ class AirzoneThermostatCard extends LitElement {
 
             <span
               class="clickable"
-              @click=${() =>
-                this._showMoreInfo(
-                  `sensor.airzone_zone_${zone}_temperature_sonde`
+              @click=${event =>
+                this._handleInternalClick(
+                  event,
+                  () =>
+                    this._showMoreInfo(
+                      `sensor.airzone_zone_${zone}_temperature_sonde`
+                    )
                 )}
             >
               ${temperature}
@@ -916,9 +1070,13 @@ class AirzoneThermostatCard extends LitElement {
 
             <span
               class="clickable"
-              @click=${() =>
-                this._showMoreInfo(
-                  `sensor.airzone_zone_${zone}_humidite`
+              @click=${event =>
+                this._handleInternalClick(
+                  event,
+                  () =>
+                    this._showMoreInfo(
+                      `sensor.airzone_zone_${zone}_humidite`
+                    )
                 )}
             >
               ${humidity}
@@ -930,21 +1088,31 @@ class AirzoneThermostatCard extends LitElement {
 
             <div
               class="offset-click-zone left clickable"
-              @click=${() =>
-                this._changeOffset(-1)}
+              @click=${event =>
+                this._handleInternalClick(
+                  event,
+                  () => this._changeOffset(-1)
+                )}
             ></div>
 
             <div
               class="offset-click-zone right clickable"
-              @click=${() =>
-                this._changeOffset(1)}
+              @click=${event =>
+                this._handleInternalClick(
+                  event,
+                  () => this._changeOffset(1)
+                )}
             ></div>
 
             <div
               class="${ringClass}"
-              @click=${() =>
-                this._showMoreInfo(
-                  `switch.airzone_zone_${zone}_etat`
+              @click=${event =>
+                this._handleInternalClick(
+                  event,
+                  () =>
+                    this._showMoreInfo(
+                      `switch.airzone_zone_${zone}_etat`
+                    )
                 )}
             ></div>
 
@@ -1006,9 +1174,13 @@ class AirzoneThermostatCard extends LitElement {
 
           <div
             class="zone-state ${zoneStateClass} clickable"
-            @click=${() =>
-              this._showMoreInfo(
-                `switch.airzone_zone_${zone}_etat`
+            @click=${event =>
+              this._handleInternalClick(
+                event,
+                () =>
+                  this._showMoreInfo(
+                    `switch.airzone_zone_${zone}_etat`
+                  )
               )}
           >
             ${zoneState}
@@ -1018,9 +1190,13 @@ class AirzoneThermostatCard extends LitElement {
             ? html`
                 <div
                   class="led-status clickable"
-                  @click=${() =>
-                    this._showMoreInfo(
-                      `switch.airzone_zone_${zone}_led_thermostat`
+                  @click=${event =>
+                    this._handleInternalClick(
+                      event,
+                      () =>
+                        this._showMoreInfo(
+                          `switch.airzone_zone_${zone}_led_thermostat`
+                        )
                     )}
                 >
                   <span
@@ -1029,6 +1205,18 @@ class AirzoneThermostatCard extends LitElement {
                       : "led-off"}"
                   ></span>
                 </div>
+              `
+            : ""}
+
+          <!-- TAP ACTION GLOBAL -->
+
+          ${this._hasTapAction()
+            ? html`
+                <div
+                  class="card-tap-action"
+                  @click=${() =>
+                    this._handleTapAction()}
+                ></div>
               `
             : ""}
 
@@ -1121,9 +1309,13 @@ class AirzoneThermostatCard extends LitElement {
             ? html`
                 <div
                   class="blueface-temperature clickable"
-                  @click=${() =>
-                    this._showMoreInfo(
-                      `sensor.airzone_zone_${zone}_temperature_sonde`
+                  @click=${event =>
+                    this._handleInternalClick(
+                      event,
+                      () =>
+                        this._showMoreInfo(
+                          `sensor.airzone_zone_${zone}_temperature_sonde`
+                        )
                     )}
                 >
                   ${temperature}
@@ -1139,8 +1331,12 @@ class AirzoneThermostatCard extends LitElement {
 
             <div
               class="blueface-control"
-              @click=${() =>
-                this._openBluefaceDialog("mode")}
+              @click=${event =>
+                this._handleInternalClick(
+                  event,
+                  () =>
+                    this._openBluefaceDialog("mode")
+                )}
             >
 
               <div class="blueface-label">
@@ -1159,8 +1355,12 @@ class AirzoneThermostatCard extends LitElement {
 
             <div
               class="blueface-control"
-              @click=${() =>
-                this._openBluefaceDialog("speed")}
+              @click=${event =>
+                this._handleInternalClick(
+                  event,
+                  () =>
+                    this._openBluefaceDialog("speed")
+                )}
             >
 
               <div class="blueface-label">
@@ -1282,6 +1482,18 @@ class AirzoneThermostatCard extends LitElement {
 
                 </div>
 
+              `
+            : ""}
+
+          <!-- TAP ACTION GLOBAL -->
+
+          ${this._hasTapAction() && !this.bluefaceDialog
+            ? html`
+                <div
+                  class="card-tap-action"
+                  @click=${() =>
+                    this._handleTapAction()}
+                ></div>
               `
             : ""}
 

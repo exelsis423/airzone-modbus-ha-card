@@ -21,7 +21,21 @@ La carte permet d'afficher :
 * l'humidité ;
 * l'offset de température du thermostat ;
 * l'état de la LED du thermostat ;
-* l'état de la zone.
+* l'état de la zone (**ON / OFF**).
+
+L'état de la zone est affiché sous l'anneau central :
+
+```text
+ON
+```
+
+lorsque la zone est active, et :
+
+```text
+OFF
+```
+
+lorsque la zone est arrêtée.
 
 L'anneau central indique visuellement l'état du système :
 
@@ -32,19 +46,18 @@ L'anneau central indique visuellement l'état du système :
 | Ventilation     | 🔵 Bleu   |
 | Chauffage       | 🔴 Rouge  |
 
-Le comportement de l'anneau dépend également de l'état de la zone :
+Lorsque la zone est arrêtée, l'anneau est affiché en **gris clair** et clignote afin d'indiquer que la zone est désactivée.
 
-* **zone active** → anneau fixe ;
-* **zone arrêtée** → anneau clignotant.
+Le comportement de l'anneau dépend donc de deux informations distinctes :
 
-La couleur et le clignotement sont donc indépendants :
-
-* la **couleur** dépend du mode de fonctionnement de la machine ;
-* le **clignotement** dépend de l'état de la zone.
+* la **couleur** dépend du mode de fonctionnement de la machine lorsque la zone est active ;
+* l'**état de la zone** détermine son apparence lorsqu'elle est arrêtée.
 
 Les flèches autour de l'anneau permettent de modifier directement l'offset du thermostat de **-3 à +3 °C**.
 
 Les températures et l'humidité sont également cliquables et ouvrent la fenêtre *More Info* de Home Assistant.
+
+L'anneau permet également d'ouvrir la fenêtre *More Info* de l'entité d'état de la zone lorsqu'aucun `tap_action` n'est configuré.
 
 ---
 
@@ -134,11 +147,12 @@ Par défaut, le type de thermostat est `lite`.
 
 ## Options disponibles
 
-| Option       | Obligatoire | Valeurs             | Description                           |
-| ------------ | ----------- | ------------------- | ------------------------------------- |
-| `zone`       | Oui         | `1` à `16`          | Numéro de la zone Airzone             |
-| `thermostat` | Non         | `lite` / `blueface` | Type de thermostat à afficher         |
-| `name`       | Non         | texte               | Nom personnalisé affiché sur la carte |
+| Option       | Obligatoire | Valeurs               | Description                                 |
+| ------------ | ----------- | --------------------- | ------------------------------------------- |
+| `zone`       | Oui         | `1` à `16`            | Numéro de la zone Airzone                   |
+| `thermostat` | Non         | `lite` / `blueface`   | Type de thermostat à afficher               |
+| `name`       | Non         | texte                 | Nom personnalisé affiché sur la carte       |
+| `tap_action` | Non         | action Home Assistant | Action exécutée lors d'un clic sur la carte |
 
 ---
 
@@ -251,6 +265,66 @@ Le paramètre `name` est donc particulièrement pratique lorsque le nom enregist
 
 ---
 
+## `tap_action`
+
+Permet de définir une action Home Assistant lors d'un clic sur la carte.
+
+Lorsque `tap_action` est configuré, **il prend la priorité sur les commandes et interactions internes de la carte**.
+
+Cela permet par exemple d'utiliser la carte comme un aperçu d'un thermostat et d'ouvrir une vue plus détaillée lors d'un clic.
+
+### Exemple avec navigation
+
+```yaml
+type: custom:airzone-thermostat-card
+zone: 1
+thermostat: lite
+
+tap_action:
+  action: navigate
+  navigation_path: /lovelace/thermostat-salon
+```
+
+Dans cet exemple, un clic sur la carte ouvre la vue :
+
+```text
+/lovelace/thermostat-salon
+```
+
+### Sans `tap_action`
+
+Si `tap_action` n'est pas défini, la carte conserve son comportement normal.
+
+Pour un thermostat Lite :
+
+* clic sur la température → *More Info* de la température ;
+* clic sur l'humidité → *More Info* de l'humidité ;
+* clic sur l'anneau → *More Info* de l'état de la zone ;
+* clic à gauche de l'anneau → diminution de l'offset ;
+* clic à droite de l'anneau → augmentation de l'offset ;
+* clic sur la LED → *More Info* de la LED.
+
+Pour un thermostat Blueface :
+
+* clic sur le mode → ouverture du sélecteur de mode ;
+* clic sur la vitesse → ouverture du sélecteur de vitesse.
+
+Cela permet donc d'utiliser la même carte de deux manières :
+
+**Sans `tap_action` :**
+
+```text
+La carte fonctionne comme un thermostat interactif.
+```
+
+**Avec `tap_action` :**
+
+```text
+La carte devient un raccourci vers une autre vue/action.
+```
+
+---
+
 # Exemples complets
 
 ## Thermostat Lite
@@ -276,6 +350,19 @@ name: Salon
 type: custom:airzone-thermostat-card
 zone: 2
 thermostat: blueface
+```
+
+## Thermostat avec navigation
+
+```yaml
+type: custom:airzone-thermostat-card
+zone: 1
+thermostat: lite
+name: Salon
+
+tap_action:
+  action: navigate
+  navigation_path: /lovelace/thermostat-salon
 ```
 
 ## Plusieurs zones
@@ -349,7 +436,9 @@ airzone-modbus-ha-card/
 │   └── airzone-thermostat-card.js
 ├── images/
 │   ├── airzone-lite.png
-│   └── airzone-blueface.png
+│   ├── airzone-blueface.png
+│   ├── exemple-lite.png
+│   └── exemple-blueface.png
 ├── hacs.json
 └── README.md
 ```

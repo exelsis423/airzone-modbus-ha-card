@@ -946,7 +946,7 @@ class AirzoneThermostatCard extends LitElement {
       },
       {
         value: "Moyenne",
-        label: "Faible",
+        label: "Moyen",
         icon: "mdi:fan-speed-2",
       },
       {

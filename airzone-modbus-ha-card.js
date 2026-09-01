@@ -6,6 +6,7 @@ class AirzoneThermostatCard extends LitElement {
     hass: {},
     config: {},
     bluefaceDialog: {},
+    liteDialog: {},
   };
 
   static styles = css`
@@ -505,6 +506,15 @@ class AirzoneThermostatCard extends LitElement {
       gap: 10px;
     }
 
+    /*
+     * Dialogue Lite :
+     * 2 boutons -> 2 colonnes au lieu de 4
+     */
+
+    .dialog-options.lite-options {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
     .dialog-option {
       display: flex;
       flex-direction: column;
@@ -531,7 +541,9 @@ class AirzoneThermostatCard extends LitElement {
     }
 
     /*
-     * Option sélectionnée
+     * Option sélectionnée :
+     * fond beaucoup plus transparent pour
+     * garder l'icône et le texte bien visibles.
      */
 
     .dialog-option.selected {
@@ -574,6 +586,7 @@ class AirzoneThermostatCard extends LitElement {
   `;
 
   setConfig(config) {
+
     if (config.zone === undefined) {
       throw new Error("Le numéro de zone est obligatoire");
     }
@@ -600,9 +613,13 @@ class AirzoneThermostatCard extends LitElement {
    * ============================================================
    * TAP ACTION
    * ============================================================
+   *
+   * Si tap_action est configuré, il devient l'action principale
+   * de la carte.
    */
 
   _hasTapAction() {
+
     return (
       this.config &&
       this.config.tap_action &&
@@ -624,6 +641,7 @@ class AirzoneThermostatCard extends LitElement {
       case "navigate":
 
         if (action.navigation_path) {
+
           history.pushState(
             null,
             "",
@@ -640,6 +658,7 @@ class AirzoneThermostatCard extends LitElement {
       case "url":
 
         if (action.url_path) {
+
           window.open(
             action.url_path,
             "_blank"
@@ -651,6 +670,7 @@ class AirzoneThermostatCard extends LitElement {
       case "more-info":
 
         if (action.entity) {
+
           this._showMoreInfo(
             action.entity
           );
@@ -672,7 +692,6 @@ class AirzoneThermostatCard extends LitElement {
               service,
               action.service_data || {}
             );
-
           }
         }
 
@@ -713,6 +732,7 @@ class AirzoneThermostatCard extends LitElement {
   _handleInternalClick(event, callback) {
 
     if (this._hasTapAction()) {
+
       event.preventDefault();
       event.stopPropagation();
 
@@ -807,50 +827,52 @@ class AirzoneThermostatCard extends LitElement {
 
   /*
    * ============================================================
-   * DIALOGUES LITE
+   * LITE - DIALOGUE ON / OFF
    * ============================================================
    */
 
   _openLiteDialog(type) {
-    this.bluefaceDialog = type;
+
+    this.liteDialog = type;
   }
 
-  async _setLiteSwitchState(
-    entityId,
-    state
-  ) {
+  _closeLiteDialog() {
+
+    this.liteDialog = null;
+  }
+
+  async _setLiteSwitch(entityId, state) {
 
     if (!this.hass || !entityId) {
       return;
     }
 
-    const service =
-      state === "on"
-        ? "turn_on"
-        : "turn_off";
-
     await this.hass.callService(
       "switch",
-      service,
+      state === "on"
+        ? "turn_on"
+        : "turn_off",
       {
         entity_id: entityId,
       }
     );
 
-    this._closeBluefaceDialog();
+    this._closeLiteDialog();
   }
 
   /*
    * ============================================================
-   * BLUEFACE
+   * BLUEFACE - DIALOGUES
    * ============================================================
    */
 
   _openBluefaceDialog(type) {
+
     this.bluefaceDialog = type;
   }
 
   _closeBluefaceDialog() {
+
     this.bluefaceDialog = null;
   }
 
@@ -972,6 +994,8 @@ class AirzoneThermostatCard extends LitElement {
 
     /*
      * État de la ZONE
+     * -> détermine le clignotement
+     * -> affiche ON / OFF
      */
 
     const zoneStateEntity =
@@ -981,6 +1005,7 @@ class AirzoneThermostatCard extends LitElement {
 
     /*
      * Mode de la MACHINE
+     * -> détermine uniquement la couleur
      */
 
     const machineModeEntity =
@@ -1043,7 +1068,7 @@ class AirzoneThermostatCard extends LitElement {
         : "off";
 
     /*
-     * Mode machine
+     * Mode de la machine
      */
 
     const machineMode =
@@ -1052,19 +1077,22 @@ class AirzoneThermostatCard extends LitElement {
     let ringState = "off";
 
     if (
-      machineMode === "Refroidissement"
+      machineMode ===
+      "Refroidissement"
     ) {
 
       ringState = "cooling";
 
     } else if (
-      machineMode === "Chauffage"
+      machineMode ===
+      "Chauffage"
     ) {
 
       ringState = "heating";
 
     } else if (
-      machineMode === "Ventilation"
+      machineMode ===
+      "Ventilation"
     ) {
 
       ringState = "cooling";
@@ -1085,7 +1113,18 @@ class AirzoneThermostatCard extends LitElement {
       .filter(Boolean)
       .join(" ");
 
+    /*
+     * Entités utilisées par le dialogue Lite
+     */
+
+    const zoneEntityId =
+      `switch.airzone_zone_${zone}_etat`;
+
+    const ledEntityId =
+      `switch.airzone_zone_${zone}_led_thermostat`;
+
     return html`
+
       <ha-card>
 
         <div class="thermostat">
@@ -1152,7 +1191,7 @@ class AirzoneThermostatCard extends LitElement {
                 )}
             ></div>
 
-            <!-- ANNEAU / ÉTAT DE LA ZONE -->
+            <!-- Anneau ON / OFF -->
 
             <div
               class="${ringClass}"
@@ -1161,7 +1200,7 @@ class AirzoneThermostatCard extends LitElement {
                   event,
                   () =>
                     this._openLiteDialog(
-                      "zone-state"
+                      "zone"
                     )
                 )}
             ></div>
@@ -1229,7 +1268,7 @@ class AirzoneThermostatCard extends LitElement {
                 event,
                 () =>
                   this._openLiteDialog(
-                    "zone-state"
+                    "zone"
                   )
               )}
           >
@@ -1240,6 +1279,7 @@ class AirzoneThermostatCard extends LitElement {
 
           ${ledEntity
             ? html`
+
                 <div
                   class="led-status clickable"
                   @click=${event =>
@@ -1251,25 +1291,28 @@ class AirzoneThermostatCard extends LitElement {
                         )
                     )}
                 >
+
                   <span
                     class="led-icon ${ledOn
                       ? ""
                       : "led-off"}"
                   ></span>
+
                 </div>
+
               `
             : ""}
 
-          <!-- =====================================================
+          <!-- =================================================
                DIALOGUE LITE
-               ===================================================== -->
+               ================================================= -->
 
-          ${this.bluefaceDialog === "zone-state"
+          ${this.liteDialog
             ? html`
 
                 <div
                   class="blueface-dialog-overlay"
-                  @click=${this._closeBluefaceDialog}
+                  @click=${this._closeLiteDialog}
                 >
 
                   <div
@@ -1278,145 +1321,125 @@ class AirzoneThermostatCard extends LitElement {
                       event.stopPropagation()}
                   >
 
-                    <div class="dialog-title">
-                      État de la zone
-                    </div>
+                    ${this.liteDialog === "zone"
+                      ? html`
 
-                    <div class="dialog-options">
+                          <div class="dialog-title">
+                            État de la zone
+                          </div>
 
-                      <button
-                        class="dialog-option
-                          ${zoneIsOn
-                            ? "selected"
-                            : ""}"
-                        @click=${() =>
-                          this._setLiteSwitchState(
-                            `switch.airzone_zone_${zone}_etat`,
-                            "on"
-                          )}
-                      >
+                          <div
+                            class="dialog-options lite-options"
+                          >
 
-                        <ha-icon
-                          icon="mdi:power"
-                        ></ha-icon>
+                            <button
+                              class="dialog-option
+                                ${zoneIsOn
+                                  ? "selected"
+                                  : ""}"
+                              @click=${() =>
+                                this._setLiteSwitch(
+                                  zoneEntityId,
+                                  "on"
+                                )}
+                            >
 
-                        <span>
-                          ON
-                        </span>
+                              <ha-icon
+                                icon="mdi:power"
+                              ></ha-icon>
 
-                      </button>
+                              <span>
+                                ON
+                              </span>
 
-                      <button
-                        class="dialog-option
-                          ${!zoneIsOn
-                            ? "selected"
-                            : ""}"
-                        @click=${() =>
-                          this._setLiteSwitchState(
-                            `switch.airzone_zone_${zone}_etat`,
-                            "off"
-                          )}
-                      >
+                            </button>
 
-                        <ha-icon
-                          icon="mdi:power-off"
-                        ></ha-icon>
+                            <button
+                              class="dialog-option
+                                ${!zoneIsOn
+                                  ? "selected"
+                                  : ""}"
+                              @click=${() =>
+                                this._setLiteSwitch(
+                                  zoneEntityId,
+                                  "off"
+                                )}
+                            >
 
-                        <span>
-                          OFF
-                        </span>
+                              <ha-icon
+                                icon="mdi:power-off"
+                              ></ha-icon>
 
-                      </button>
+                              <span>
+                                OFF
+                              </span>
 
-                    </div>
+                            </button>
 
-                    <button
-                      class="dialog-close"
-                      @click=${this._closeBluefaceDialog}
-                    >
-                      Annuler
-                    </button>
+                          </div>
 
-                  </div>
+                        `
+                      : html`
 
-                </div>
+                          <div class="dialog-title">
+                            LED thermostat
+                          </div>
 
-              `
-            : ""}
+                          <div
+                            class="dialog-options lite-options"
+                          >
 
-          <!-- =====================================================
-               DIALOGUE LED
-               ===================================================== -->
+                            <button
+                              class="dialog-option
+                                ${ledOn
+                                  ? "selected"
+                                  : ""}"
+                              @click=${() =>
+                                this._setLiteSwitch(
+                                  ledEntityId,
+                                  "on"
+                                )}
+                            >
 
-          ${this.bluefaceDialog === "led"
-            ? html`
+                              <ha-icon
+                                icon="mdi:led-on"
+                              ></ha-icon>
 
-                <div
-                  class="blueface-dialog-overlay"
-                  @click=${this._closeBluefaceDialog}
-                >
+                              <span>
+                                Activée
+                              </span>
 
-                  <div
-                    class="blueface-dialog"
-                    @click=${event =>
-                      event.stopPropagation()}
-                  >
+                            </button>
 
-                    <div class="dialog-title">
-                      LED du thermostat
-                    </div>
+                            <button
+                              class="dialog-option
+                                ${!ledOn
+                                  ? "selected"
+                                  : ""}"
+                              @click=${() =>
+                                this._setLiteSwitch(
+                                  ledEntityId,
+                                  "off"
+                                )}
+                            >
 
-                    <div class="dialog-options">
+                              <ha-icon
+                                icon="mdi:led-off"
+                              ></ha-icon>
 
-                      <button
-                        class="dialog-option
-                          ${ledOn
-                            ? "selected"
-                            : ""}"
-                        @click=${() =>
-                          this._setLiteSwitchState(
-                            `switch.airzone_zone_${zone}_led_thermostat`,
-                            "on"
-                          )}
-                      >
+                              <span>
+                                Désactivée
+                              </span>
 
-                        <ha-icon
-                          icon="mdi:led-on"
-                        ></ha-icon>
+                            </button>
 
-                        <span>
-                          ON
-                        </span>
+                          </div>
 
-                      </button>
-
-                      <button
-                        class="dialog-option
-                          ${!ledOn
-                            ? "selected"
-                            : ""}"
-                        @click=${() =>
-                          this._setLiteSwitchState(
-                            `switch.airzone_zone_${zone}_led_thermostat`,
-                            "off"
-                          )}
-                      >
-
-                        <ha-icon
-                          icon="mdi:led-off"
-                        ></ha-icon>
-
-                        <span>
-                          OFF
-                        </span>
-
-                      </button>
-
-                    </div>
+                        `}
 
                     <button
                       class="dialog-close"
-                      @click=${this._closeBluefaceDialog}
+                      @click=${this._closeLiteDialog}
                     >
                       Annuler
                     </button>
@@ -1430,13 +1453,16 @@ class AirzoneThermostatCard extends LitElement {
 
           <!-- TAP ACTION GLOBAL -->
 
-          ${this._hasTapAction()
+          ${this._hasTapAction() &&
+          !this.liteDialog
             ? html`
+
                 <div
                   class="card-tap-action"
                   @click=${() =>
                     this._handleTapAction()}
                 ></div>
+
               `
             : ""}
 
@@ -1515,6 +1541,7 @@ class AirzoneThermostatCard extends LitElement {
       );
 
     return html`
+
       <ha-card>
 
         <div class="blueface">
@@ -1564,7 +1591,8 @@ class AirzoneThermostatCard extends LitElement {
             >
 
               <div class="blueface-label">
-                ${currentMode?.label || "Mode"}
+                ${currentMode?.label ||
+                "Mode"}
               </div>
 
               <div class="blueface-icon">
@@ -1594,7 +1622,7 @@ class AirzoneThermostatCard extends LitElement {
 
               <div class="blueface-label">
                 ${currentSpeed?.label ||
-                  "Auto"}
+                "Auto"}
               </div>
 
               <div class="blueface-icon">
@@ -1610,15 +1638,9 @@ class AirzoneThermostatCard extends LitElement {
 
           </div>
 
-          <!-- =====================================================
-               DIALOGUE BLUEFACE
-               ===================================================== -->
+          <!-- DIALOGUE BLUEFACE -->
 
-          ${this.bluefaceDialog &&
-          (
-            this.bluefaceDialog === "mode" ||
-            this.bluefaceDialog === "speed"
-          )
+          ${this.bluefaceDialog
             ? html`
 
                 <div
@@ -1642,31 +1664,32 @@ class AirzoneThermostatCard extends LitElement {
                           <div class="dialog-options">
 
                             ${modeOptions.map(
-                              option => html`
+                              option =>
+                                html`
 
-                                <button
-                                  class="dialog-option
-                                    ${option.value === mode
-                                      ? "selected"
-                                      : ""}"
-                                  @click=${() =>
-                                    this._selectBluefaceOption(
-                                      "select.airzone_mode",
-                                      option.value
-                                    )}
-                                >
+                                  <button
+                                    class="dialog-option
+                                      ${option.value === mode
+                                        ? "selected"
+                                        : ""}"
+                                    @click=${() =>
+                                      this._selectBluefaceOption(
+                                        "select.airzone_mode",
+                                        option.value
+                                      )}
+                                  >
 
-                                  <ha-icon
-                                    icon="${option.icon}"
-                                  ></ha-icon>
+                                    <ha-icon
+                                      icon="${option.icon}"
+                                    ></ha-icon>
 
-                                  <span>
-                                    ${option.label}
-                                  </span>
+                                    <span>
+                                      ${option.label}
+                                    </span>
 
-                                </button>
+                                  </button>
 
-                              `
+                                `
                             )}
 
                           </div>
@@ -1681,31 +1704,32 @@ class AirzoneThermostatCard extends LitElement {
                           <div class="dialog-options">
 
                             ${speedOptions.map(
-                              option => html`
+                              option =>
+                                html`
 
-                                <button
-                                  class="dialog-option
-                                    ${option.value === speed
-                                      ? "selected"
-                                      : ""}"
-                                  @click=${() =>
-                                    this._selectBluefaceOption(
-                                      "select.airzone_vitesse_ventilation",
-                                      option.value
-                                    )}
-                                >
+                                  <button
+                                    class="dialog-option
+                                      ${option.value === speed
+                                        ? "selected"
+                                        : ""}"
+                                    @click=${() =>
+                                      this._selectBluefaceOption(
+                                        "select.airzone_vitesse_ventilation",
+                                        option.value
+                                      )}
+                                  >
 
-                                  <ha-icon
-                                    icon="${option.icon}"
-                                  ></ha-icon>
+                                    <ha-icon
+                                      icon="${option.icon}"
+                                    ></ha-icon>
 
-                                  <span>
-                                    ${option.label}
-                                  </span>
+                                    <span>
+                                      ${option.label}
+                                    </span>
 
-                                </button>
+                                  </button>
 
-                              `
+                                `
                             )}
 
                           </div>
@@ -1782,7 +1806,7 @@ window.customCards =
 window.customCards.push({
   type: "airzone-thermostat-card",
   name: "Airzone Thermostat",
-  description:
-    "Thermostat Lite / Blueface",
+  description: "Thermostat Lite / Blueface",
   preview: true,
 });
+

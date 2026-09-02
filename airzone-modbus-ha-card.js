@@ -272,7 +272,7 @@ class AirzoneThermostatCard extends LitElement {
 
       transform: translateX(-50%);
 
-      font-size: clamp(10px, 4.5cqw, 20px);
+      font-size: clamp(10px, 9cqw, 50px);
       font-weight: 600;
 
       text-align: center;
